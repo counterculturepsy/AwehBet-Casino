@@ -134,3 +134,25 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #ffcf
 .slot-card:hover .slot-image-majestic img,.slot-card .slot-image-majestic:hover img{transform:none}
 .slot-grid{min-width:0}
 .slot-card{min-width:0}
+
+/* Majestic King artwork has neighbouring-tile slivers on both edges.
+   Use a centered crop rather than anchoring the enlarged image left. */
+.slot-card .slot-image-majestic img{
+ width:122%;
+ max-width:none;
+ height:100%;
+ object-fit:cover;
+ object-position:center center;
+ transform:translateX(-9%);
+ transform-origin:center center;
+}
+.slot-card:hover .slot-image-majestic img,
+.slot-card .slot-image-majestic:hover img{transform:translateX(-9%)}
+@media(max-width:560px){
+ #games .slot-grid .slot-card:last-child .slot-image-majestic img{
+  width:122%;max-width:none;height:100%;
+  object-fit:cover;object-position:center center;
+  transform:translateX(-9%);transform-origin:center center;
+ }
+ #games .slot-grid .slot-card:last-child .slot-image-majestic:hover img{transform:translateX(-9%)}
+}
