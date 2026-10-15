@@ -369,3 +369,60 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #ffcf
      url('/assets/slots-lobby-neon.webp');
  }
 }
+
+
+/* Slots Masters: reference-matched desktop composition; artwork remains a separate original image. */
+.slots-lobby .slots-lobby-header{background:rgba(5,5,19,.93);border-bottom-color:#3c2a41}
+.slots-lobby .slots-neon-scene{
+ top:90px;
+ height:clamp(660px,61vw,1020px);
+ min-height:0;
+ background-image:
+  linear-gradient(180deg,rgba(5,5,17,.06) 0%,rgba(5,5,17,.04) 35%,rgba(5,5,17,.14) 65%,#080713 100%),
+  url('/assets/slots-lobby-neon.webp');
+ background-size:cover;
+ background-position:center top;
+ background-repeat:no-repeat;
+}
+.slots-lobby .slots-lobby-intro{
+ max-width:1728px;
+ padding:54px clamp(24px,4.9vw,84px) 14px;
+ min-height:244px;
+}
+.slots-lobby .slots-lobby-intro h1{
+ font-size:clamp(44px,5.3vw,86px);
+ font-weight:900;
+ line-height:1.04;
+ letter-spacing:-.048em;
+ color:#fff;
+ text-shadow:0 3px 10px #0506159e;
+}
+.slots-lobby .slots-lobby-intro h1 span{color:#f3bb54;text-shadow:0 3px 14px #0007}
+.slots-lobby .slots-lobby-intro p{max-width:670px;font-size:clamp(15px,1.15vw,19px);line-height:1.65}
+.slots-lobby .slots-lobby-content{max-width:1728px;padding:10px clamp(24px,4.9vw,84px) 72px}
+.slots-lobby .slots-lobby-search{max-width:610px;min-height:56px}
+.slots-lobby .slots-lobby-favourites{min-height:56px}
+.slots-lobby .slots-lobby-categories{margin:16px 0 12px}
+.slots-lobby .slots-lobby-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:16px 14px}
+.slots-lobby .slots-lobby-card{overflow:hidden;border-color:#6a344b;border-radius:13px}
+.slots-lobby .slots-lobby-image{aspect-ratio:1.6/1}
+.slots-lobby .slots-lobby-card-details{padding:11px 14px}
+@media(max-width:1100px){
+ .slots-lobby .slots-lobby-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .slots-lobby .slots-neon-scene{top:140px}
+}
+@media(max-width:750px){
+ .slots-lobby .slots-lobby-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:650px){
+ .slots-lobby .slots-neon-scene{
+  top:132px;height:700px;
+  background-image:linear-gradient(180deg,rgba(5,5,17,.22) 0%,rgba(5,5,17,.18) 30%,#080713 100%),url('/assets/slots-lobby-neon.webp');
+  background-position:63% top;
+ }
+ .slots-lobby .slots-lobby-intro{padding-top:34px;min-height:240px}
+ .slots-lobby .slots-lobby-intro h1{font-size:clamp(39px,9vw,57px)}
+ .slots-lobby .slots-lobby-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 10px}
+ .slots-lobby .slots-lobby-image{aspect-ratio:1.18/1}
+ .slots-lobby .slots-lobby-content{padding-left:16px;padding-right:16px}
+}
