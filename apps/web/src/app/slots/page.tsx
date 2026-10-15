@@ -41,8 +41,8 @@ export default function SlotsLobby(){
   <div className="slots-neon-scene" aria-hidden="true"/>
   <section className="slots-lobby-intro">
    <span className="slots-eyebrow"><Gamepad2 size={16}/> AWEHBET GAME LOBBY</span>
-   <h1><span>SLOTS</span></h1>
-   <p>Explore your favourite slot games, discover new titles and find your next game at AwehBet.</p>
+   <h1>SLOTS <span>MASTERS</span></h1>
+   <p>Spin into a world of exciting slot games. Explore top titles, new releases and player favourites — all in one place at AwehBet.</p>
   </section>
   <section className="slots-lobby-content" aria-label="Slots catalogue">
    <div className="slots-lobby-tools">
