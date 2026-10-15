@@ -282,3 +282,25 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #ffcf
     gap: 10px;
   }
 }
+
+/* Centre AwehBet logo above mobile account buttons */
+@media (max-width: 560px) {
+  .header {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .header .brand {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    justify-self: center;
+    width: 155px;
+    max-width: calc(100% - 65px);
+  }
+
+  .header .mobile-menu {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    z-index: 1;
+  }
+}
