@@ -254,3 +254,54 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #ffcf
 .favourites-filter:hover,.favourites-filter.active{background:#a90c36;border-color:#ef446b;color:#fff}
 .favourites-filter:focus-visible{outline:2px solid #ffcf80;outline-offset:3px}
 @media(max-width:560px){.game-discovery-actions{gap:6px}.favourites-filter{font-size:11px;padding:7px 8px}}
+
+
+/* Phase 5: dedicated Slots Lobby — scoped to preserve approved Design #5 homepage */
+.slots-lobby{min-height:100vh;background:radial-gradient(ellipse at 50% -15%,#371722 0%,#130e14 48%,#0d0b0f 100%);color:#f8f4f5}
+.slots-lobby *{box-sizing:border-box}
+.slots-lobby-header{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:86px;padding:14px clamp(18px,4vw,72px);border-bottom:1px solid #4c2b37;background:#120d13}
+.slots-lobby-logo img{display:block;width:clamp(135px,16vw,210px);height:auto}
+.slots-back{display:inline-flex;align-items:center;gap:8px;color:#f2d2d9;text-decoration:none;font-size:13px;font-weight:700}
+.slots-back:hover{color:#fff}
+.slots-lobby-intro{max-width:1420px;margin:0 auto;padding:48px clamp(18px,4vw,72px) 30px}
+.slots-eyebrow{display:inline-flex;align-items:center;gap:8px;color:#efaf6a;font-size:12px;font-weight:800;letter-spacing:.17em}
+.slots-lobby-intro h1{font-size:clamp(36px,5.5vw,74px);line-height:1.1;margin:13px 0;font-weight:900;letter-spacing:-.035em}
+.slots-lobby-intro h1 span{color:#e7b774}
+.slots-lobby-intro p{color:#d5c5cb;max-width:650px;font-size:14px;line-height:1.7}
+.slots-lobby-content{max-width:1420px;margin:0 auto;padding:8px clamp(18px,4vw,72px) 65px}
+.slots-lobby-tools{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.slots-lobby-search{display:flex;align-items:center;gap:10px;flex:1;min-width:190px;max-width:520px;padding:12px 14px;border:1px solid #60404c;border-radius:9px;background:#211820;color:#f4d4db}
+.slots-lobby-search input{border:0;outline:0;background:transparent;color:white;width:100%;min-width:0;font:inherit}
+.slots-lobby-search input::placeholder{color:#a9959e}
+.slots-lobby-favourites,.slots-lobby-categories button,.slots-lobby-empty button,.slots-lobby-dismiss{border:1px solid #744552;border-radius:8px;background:#251820;color:#f8dce3;padding:11px 15px;font-weight:700;cursor:pointer}
+.slots-lobby-favourites{display:inline-flex;align-items:center;gap:8px}
+.slots-lobby-favourites.active,.slots-lobby-categories button.active,.slots-lobby-empty button,.slots-lobby-dismiss{background:#ad103c;border-color:#e53c66;color:#fff}
+.slots-lobby-categories{display:flex;flex-wrap:wrap;gap:9px;margin:20px 0}
+.slots-lobby-categories button{font-size:12px}
+.slots-lobby-count{display:flex;align-items:center;gap:8px;color:#cfb6c0;font-size:12px;margin:18px 0}
+.slots-lobby-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:20px 14px}
+.slots-lobby-card{position:relative;min-width:0;overflow:hidden;background:#241922;border:1px solid #4b303b;border-radius:11px}
+.slots-lobby-image{position:relative;display:block;width:100%;aspect-ratio:1/1;padding:0;border:0;overflow:hidden;background:#170f17;cursor:pointer}
+.slots-lobby-image img{display:block;width:100%;height:100%;object-fit:cover}
+.slots-lobby-image span{position:absolute;bottom:0;left:0;right:0;background:#a60e3edc;color:#fff;padding:9px;text-align:center;font-size:11px;font-weight:900;opacity:0;transition:opacity .15s}
+.slots-lobby-image:hover span,.slots-lobby-image:focus-visible span{opacity:1}
+.slots-lobby-heart{position:absolute;right:9px;top:9px;display:grid;place-items:center;width:34px;height:34px;border:1px solid #ffffff66;border-radius:50%;background:#1c1015df;color:#fff;cursor:pointer}
+.slots-lobby-heart.saved{color:#ff5d85;background:#39121e}
+.slots-lobby-card-details{display:flex;flex-direction:column;gap:5px;padding:12px}
+.slots-lobby-card-details strong{font-size:13px;line-height:1.4;overflow-wrap:anywhere}
+.slots-lobby-card-details small{font-size:11px;color:#d4b37d}
+.slots-lobby-empty{text-align:center;border:1px dashed #694552;border-radius:12px;padding:45px 16px;color:#d6c5cb}
+.slots-lobby-empty h2{color:#fff}
+.slots-lobby-footer{text-align:center;border-top:1px solid #4c2b37;padding:25px 18px;color:#bcaab2;font-size:12px;line-height:1.6}
+.slots-lobby-overlay{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:18px;background:#000b}
+.slots-lobby-dialog{position:relative;width:min(100%,440px);padding:38px 24px;text-align:center;border:1px solid #8c4355;border-radius:14px;background:#21151e;box-shadow:0 22px 75px #0009}
+.slots-lobby-dialog>img{width:155px;max-width:100%}
+.slots-lobby-dialog h2{margin:18px 0 9px}
+.slots-lobby-dialog p{line-height:1.6;color:#d6c5cb}
+.slots-lobby-dismiss{margin-top:15px}
+.slots-lobby-close{position:absolute;right:12px;top:12px;background:transparent;border:0;color:white;cursor:pointer}
+.slots-lobby button:focus-visible,.slots-lobby a:focus-visible,.slots-lobby input:focus-visible{outline:2px solid #f7c47c;outline-offset:3px}
+@media(max-width:1050px){.slots-lobby-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:750px){.slots-lobby-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.slots-lobby-intro{padding-top:34px}}
+@media(max-width:560px){.slots-lobby-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 10px}.slots-lobby-tools{align-items:stretch}.slots-lobby-search{max-width:none;flex-basis:100%}.slots-lobby-favourites{justify-content:center}.slots-lobby-card-details{padding:9px}.slots-lobby-card-details strong{font-size:12px}.slots-lobby-image span{opacity:1;font-size:10px;padding:6px}.slots-lobby-header{min-height:70px}}
+@media(prefers-reduced-motion:reduce){.slots-lobby-image span{transition:none}}
