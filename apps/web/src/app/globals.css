@@ -108,3 +108,14 @@
  .slot-card:last-child:nth-child(3n + 1){grid-column:2}
  #games.content-section{overflow:visible}
 }
+
+/* The Majestic King source thumbnail includes a strip of the next tile.
+   Zoom only this thumbnail to hide the strip within its existing clip box. */
+@media(max-width:560px){
+ #games .slot-grid .slot-card:last-child .slot-image{overflow:hidden}
+ #games .slot-grid .slot-card:last-child .slot-image img{
+  width:115%;max-width:none;height:100%;object-fit:cover;
+  object-position:left center;transform:none;transform-origin:left center;
+ }
+ #games .slot-grid .slot-card:last-child .slot-image:hover img{transform:none}
+}
