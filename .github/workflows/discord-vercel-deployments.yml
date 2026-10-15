@@ -1,0 +1,59 @@
+name: AwehBet Vercel Deployment Alerts
+
+on:
+  deployment_status:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: read
+
+jobs:
+  notify-discord:
+    if: ${{ github.event_name == 'workflow_dispatch' || contains(fromJSON('["success","failure","error"]'), github.event.deployment_status.state) }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Vercel deployment alert to Discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_PATH: ${{ github.event_path }}
+          REPO: ${{ github.repository }}
+        run: |
+          python3 - <<'PY'
+          import json, os, sys, urllib.request
+          url = os.environ.get('DISCORD_WEBHOOK_URL')
+          if not url:
+              print('Missing DISCORD_WEBHOOK_URL repository secret')
+              sys.exit(1)
+          with open(os.environ['GITHUB_EVENT_PATH'], encoding='utf-8') as f:
+              event = json.load(f)
+          if os.environ['EVENT_NAME'] == 'workflow_dispatch':
+              title, details, color = 'Vercel alerts test', 'GitHub Actions can send deployment alerts to this channel.', 3447003
+          else:
+              status = event.get('deployment_status', {})
+              deployment = event.get('deployment', {})
+              state = status.get('state', 'unknown')
+              creator = (status.get('creator') or {}).get('login', '')
+              # Avoid forwarding deployment notifications from unrelated integrations.
+              if creator.lower() not in ('vercel[bot]', 'vercel'):
+                  print('Ignoring non-Vercel deployment status from:', creator)
+                  sys.exit(0)
+              environment = deployment.get('environment') or 'Unknown'
+              target = status.get('environment_url') or status.get('target_url') or ''
+              if target and not target.startswith(('https://', 'http://')):
+                  target = ''
+              title = 'Vercel deployment succeeded' if state == 'success' else 'Vercel deployment failed'
+              color = 3066993 if state == 'success' else 15158332
+              details = f'**Environment:** {environment}\n**Status:** {state}\n**Commit:** `{str(deployment.get("sha", ""))[:7]}`'
+              if target:
+                  details += f'\n[Open deployment]({target})'
+          payload = {
+              'username': 'AwehBet Build Bot',
+              'allowed_mentions': {'parse': []},
+              'embeds': [{'title': title, 'description': details, 'color': color, 'footer': {'text': os.environ['REPO']}}]
+          }
+          request = urllib.request.Request(url, data=json.dumps(payload).encode(), headers={'Content-Type': 'application/json', 'User-Agent': 'AwehBet-Deploy-Alerts'}, method='POST')
+          with urllib.request.urlopen(request, timeout=15) as response:
+              print('Discord deployment notification delivered:', response.status)
+          PY
