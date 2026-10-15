@@ -369,3 +369,45 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #ffcf
      url('/assets/slots-lobby-neon.webp');
  }
 }
+
+
+/* Cape Town artwork: use the exact supplied image, with minimal overlay and a readable lobby. */
+.slots-lobby .slots-neon-scene{
+  z-index:-1;
+  top:90px;
+  height:clamp(650px,57vw,1000px);
+  min-height:0;
+  background-image:
+    linear-gradient(180deg,rgba(8,7,19,.02) 0%,rgba(8,7,19,.03) 40%,rgba(8,7,19,.48) 72%,#080713 100%),
+    url('/assets/slots-lobby-neon.webp');
+  background-position:center top;
+  background-size:cover;
+  background-repeat:no-repeat;
+}
+.slots-lobby .slots-lobby-intro{
+  min-height:300px;
+  padding-top:64px;
+}
+.slots-lobby .slots-lobby-intro h1{
+  text-shadow:0 3px 14px #02030c;
+}
+.slots-lobby .slots-lobby-intro p{
+  max-width:490px;
+  text-shadow:0 2px 9px #02030c;
+}
+.slots-lobby .slots-lobby-content{position:relative}
+.slots-lobby .slots-lobby-card{background:#0b0b19ee}
+@media(max-width:1150px){
+ .slots-lobby .slots-neon-scene{top:140px}
+}
+@media(max-width:650px){
+ .slots-lobby .slots-neon-scene{
+   top:132px;
+   height:590px;
+   background-image:
+     linear-gradient(180deg,rgba(8,7,19,.2) 0%,rgba(8,7,19,.3) 35%,#080713 100%),
+     url('/assets/slots-lobby-neon.webp');
+   background-position:64% top;
+ }
+ .slots-lobby .slots-lobby-intro{min-height:270px;padding-top:40px}
+}
