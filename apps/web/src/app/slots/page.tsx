@@ -56,7 +56,7 @@ export default function SlotsLobby(){
    {visible.length>0?<div className="slots-lobby-grid">{visible.map(game=><article className="slots-lobby-card" key={game.name}>
     <button type="button" className="slots-lobby-image" onClick={()=>setSelected(game.name)} aria-label={`View ${game.name}`}><img src={`/assets/slot-${game.image}.webp`} alt={game.name}/><span>VIEW GAME</span></button>
     <button type="button" className={favourites.includes(game.name)?'slots-lobby-heart saved':'slots-lobby-heart'} onClick={()=>toggleFavourite(game.name)} aria-label={`${favourites.includes(game.name)?'Remove from':'Add to'} favourites: ${game.name}`} aria-pressed={favourites.includes(game.name)}><Heart size={18} fill={favourites.includes(game.name)?'currentColor':'none'}/></button>
-    <div className="slots-lobby-card-details"><strong>{game.name}</strong><small>{game.image===7?'Spribe':game.image===6?'Play’n GO':'Pragmatic Play'}</small></div>
+    <div className="slots-lobby-card-details"><strong>{game.name}</strong><small>Game preview</small></div>
    </article>)}</div>:<div className="slots-lobby-empty"><h2>No games found</h2><p>{onlyFavourites&&favourites.length===0?'Save a game using its heart icon to see it here.':'Try another search, category or turn off the favourites filter.'}</p><button type="button" onClick={()=>{setQuery('');setCategory('All Slots');setOnlyFavourites(false)}}>Clear filters</button></div>}
   </section>
   <footer className="slots-lobby-footer">18+ · AwehBet visual frontend preview · Game artwork is illustrative and not a licensed game integration. No real-money wagering or payment processing.</footer>
