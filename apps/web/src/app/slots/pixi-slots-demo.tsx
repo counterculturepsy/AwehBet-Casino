@@ -26,6 +26,7 @@ export default function PixiSlotsDemo({ onClose }: { onClose: () => void }) {
   const [spinning, setSpinning] = useState(false);
   const [message, setMessage] = useState('Demo credits only — no cash value.');
   const [error, setError] = useState('');
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -37,6 +38,7 @@ export default function PixiSlotsDemo({ onClose }: { onClose: () => void }) {
       app = new PIXI.Application({ width: REELS * SIZE, height: ROWS * SIZE, backgroundColor: 0x150a16, antialias: true, resolution: Math.min(window.devicePixelRatio || 1, 2), autoDensity: true });
       mount.current.appendChild(app.view);
       pixi.current = { app, PIXI };
+      setReady(true);
     };
     if (window.PIXI) initialize();
     else {
@@ -55,7 +57,7 @@ export default function PixiSlotsDemo({ onClose }: { onClose: () => void }) {
   }, []);
 
   useEffect(() => {
-    if (!pixi.current) return;
+    if (!ready || !pixi.current) return;
     const { app, PIXI } = pixi.current;
     app.stage.removeChildren().forEach((child: any) => child.destroy({ children: true }));
     reels.forEach((column, x) => column.forEach((symbol, y) => {
@@ -67,7 +69,7 @@ export default function PixiSlotsDemo({ onClose }: { onClose: () => void }) {
       label.position.set(x * SIZE + SIZE / 2, y * SIZE + SIZE / 2);
       app.stage.addChild(label);
     }));
-  }, [reels, error]);
+  }, [reels, ready]);
 
   useEffect(() => {
     if (!spinning) return;
