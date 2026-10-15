@@ -1,0 +1,66 @@
+name: AwehBet Discord Build Updates
+
+on:
+  push:
+    branches:
+      - design5-master
+      - 'feature/**'
+  pull_request:
+    types: [opened, reopened, synchronize, closed, ready_for_review]
+    branches: [design5-master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    name: Discord build notification
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' || github.event.action != 'synchronize' }}
+    steps:
+      - name: Send Discord notification
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_ACTION: ${{ github.event.action }}
+          REPO: ${{ github.repository }}
+          REF_NAME: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+          ACTOR: ${{ github.actor }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          EVENT_PATH: ${{ github.event_path }}
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.request, sys
+          url = os.environ.get('DISCORD_WEBHOOK_URL', '')
+          if not url:
+              print('DISCORD_WEBHOOK_URL is not configured. Skipping notification.')
+              sys.exit(0)
+          with open(os.environ['EVENT_PATH'], encoding='utf-8') as f:
+              event = json.load(f)
+          kind = os.environ['EVENT_NAME']
+          repo = os.environ['REPO']
+          actor = os.environ['ACTOR']
+          if kind == 'push':
+              branch = os.environ['REF_NAME']
+              commits = event.get('commits', [])
+              summary = commits[-1].get('message', 'New commit').splitlines()[0] if commits else 'Branch updated'
+              link = event.get('compare') or os.environ['RUN_URL']
+              title = 'Code pushed'
+              description = f'**Branch:** `{branch}`\n**Update:** {summary[:250]}\n**By:** {actor}\n[View changes]({link})'
+          elif kind == 'pull_request':
+              pr = event['pull_request']
+              action = os.environ.get('EVENT_ACTION', 'updated')
+              if action == 'closed':
+                  action = 'merged' if pr.get('merged') else 'closed'
+              title = f'Pull request {action}'
+              description = f'**#{pr["number"]}:** {pr["title"][:250]}\n**By:** {actor}\n[View pull request]({pr["html_url"]})'
+          else:
+              title = 'Manual build update'
+              description = f'**By:** {actor}\n[View workflow]({os.environ["RUN_URL"]})'
+          payload = {'username': 'AwehBet Build Bot', 'allowed_mentions': {'parse': []}, 'embeds': [{'title': title, 'description': description, 'color': 15158332, 'footer': {'text': repo}}]}
+          request = urllib.request.Request(url, data=json.dumps(payload).encode('utf-8'), headers={'Content-Type': 'application/json', 'User-Agent': 'AwehBet-GitHub-Actions'}, method='POST')
+          with urllib.request.urlopen(request, timeout=15) as response:
+              print('Discord notification delivered:', response.status)
+          PY
