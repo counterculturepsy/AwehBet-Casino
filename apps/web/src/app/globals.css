@@ -193,3 +193,92 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #ffcf
  .slot-grid{gap:6px}
  .section-head h2{font-size:12px}
 }
+
+/* AwehBet Design 5 - mobile screenshot refinements */
+@media (max-width: 560px) {
+  .header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .brand {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: center;
+    width: min(175px, 100%);
+  }
+
+  .mobile-menu {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+    padding: 8px;
+  }
+
+  .header .account {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 6px;
+  }
+
+  .header .account > * {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .header .account button {
+    width: 100%;
+    padding: 10px 6px;
+  }
+
+  .header .player-entry {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    width: 100%;
+    max-width: none;
+    justify-content: center;
+  }
+
+  .top-search {
+    grid-column: 1 / -1;
+    grid-row: 4;
+    width: 100%;
+    margin: 0;
+  }
+
+  .navigation {
+    top: 100%;
+  }
+
+  .hero {
+    background: #220e0b;
+  }
+
+  .hero-image {
+    background-position: center;
+    opacity: 1;
+  }
+
+  .hero-shade {
+    background: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, .68),
+      rgba(0, 0, 0, .15)
+    );
+  }
+
+  .hero h1 {
+    color: #fff;
+    text-shadow: 0 3px 10px #000;
+  }
+
+  .slot-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+}
