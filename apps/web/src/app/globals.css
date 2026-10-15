@@ -193,3 +193,38 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #ffcf
  .slot-grid{gap:6px}
  .section-head h2{font-size:12px}
 }
+
+
+/* Phase 3: desktop navigation and dashboard visual polish. */
+@media(min-width:1251px){
+ .header{gap:clamp(6px,.7vw,14px);padding-inline:clamp(12px,1.2vw,24px)}
+ .brand{width:clamp(155px,14vw,230px)}
+ .navigation{min-width:0}
+ .nav-item{min-width:0;flex:1;padding:8px 2px;line-height:1.25;text-align:center}
+ .top-search{min-width:145px;width:clamp(145px,13vw,235px);flex-shrink:1}
+ .account{flex-shrink:0;gap:6px}
+ .account button{padding:11px clamp(9px,.9vw,18px)}
+ .player-entry{padding:11px clamp(8px,.8vw,15px)}
+}
+@media(min-width:851px) and (max-width:1450px){
+ .header{flex-wrap:wrap;height:auto;min-height:78px;padding-block:8px}
+ .brand{width:185px}
+ .navigation{order:5;flex-basis:100%;height:60px}
+ .nav-item{min-width:0}
+ .top-search{margin-left:auto}
+}
+@media(min-width:851px){
+ .slot-card{transition:translate .2s ease}
+ .slot-card:hover{translate:0 -3px}
+ .promo-card,.live-card{transition:box-shadow .2s ease,border-color .2s ease}
+ .promo-card:hover,.live-card:hover{box-shadow:0 0 0 1px #a82c46,0 10px 25px #0008}
+ .player-panel{border-color:#81505c}
+ .player-head{border-bottom:1px solid #392731}
+ .player-balance{box-shadow:inset 0 1px #ffffff24,0 12px 30px #0005}
+ .player-stat-grid>div{min-width:0}
+ .player-tabs button:hover{color:#fff;background:#ffffff0b}
+}
+@media(prefers-reduced-motion:reduce){
+ .slot-card,.promo-card,.live-card{transition:none!important}
+ .slot-card:hover{translate:none}
+}
