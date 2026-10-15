@@ -2,3 +2,32 @@
 
 /* Sandbox-only AwehBet deposit centre */
 .deposit-trigger{display:inline-flex;align-items:center;gap:7px;background:#e50935;border:1px solid #ff345b;border-radius:9px;padding:10px 14px;color:#fff;font-weight:800}.deposit-demo{font-size:9px;border:1px solid #ffffff77;border-radius:4px;padding:2px 4px}.deposit-backdrop{position:fixed;inset:0;z-index:30;background:#000d;display:flex;align-items:center;justify-content:center;padding:16px}.deposit-panel{width:min(690px,100%);max-height:94vh;overflow:auto;position:relative;background:#0e1019;border:1px solid #49313a;border-radius:16px;padding:30px;color:#fff;box-shadow:0 30px 90px #000b}.deposit-close{position:absolute;right:18px;top:18px;border:0;background:transparent;color:#fff}.deposit-kicker{color:#ffbd40;font-size:11px;font-weight:900;letter-spacing:2px}.deposit-panel h2{margin:9px 0;font-size:30px}.deposit-muted{color:#aeb6c6;font-size:13px;line-height:1.6}.deposit-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;border-bottom:1px solid #303342;margin:22px 0 17px}.deposit-tabs button{background:transparent;border:0;border-bottom:3px solid transparent;color:#c9ccd5;padding:12px 4px;font-weight:700}.deposit-tabs button.active{color:#fff;border-color:#e50935}.deposit-methods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.deposit-methods button{min-height:95px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;background:#191c29;border:1px solid #333848;border-radius:9px;color:#fff;padding:12px 5px}.deposit-methods button svg{color:#ffbd40}.deposit-methods button.selected{border-color:#ed1746;background:#2d1724}.deposit-methods small{color:#9ea6b5;font-size:10px}.deposit-label{display:block;font-weight:700;margin:24px 0 12px}.deposit-amounts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.deposit-amounts button{border:1px solid #343849;border-radius:7px;padding:11px;background:#191c29;color:#fff}.deposit-amounts button.active{background:#e50935;border-color:#e50935}.deposit-input{width:100%;background:#171a26;color:white;border:1px solid #414657;border-radius:7px;padding:12px;margin-top:12px}.deposit-small{font-size:11px}.deposit-submit{width:100%;display:flex;justify-content:center;gap:12px;background:#e50935;color:#fff;border:0;border-radius:9px;padding:14px;font-weight:900;margin-top:18px}.deposit-feedback{background:#2b2130;border:1px solid #5b3b4d;padding:12px;border-radius:8px;font-size:13px}.deposit-footer{display:flex;align-items:center;justify-content:center;gap:6px;color:#9ea6b5;font-size:11px;margin:20px 0 0}@media(max-width:600px){.deposit-panel{padding:22px 15px}.deposit-methods{grid-template-columns:repeat(2,minmax(0,1fr))}.deposit-panel h2{font-size:24px}.deposit-tabs button{font-size:11px}.deposit-trigger{padding:8px;font-size:12px}.deposit-demo{display:none}}
+
+/* Design 5 sandbox account experience */
+.auth-backdrop{position:fixed;inset:0;z-index:40;background:#000e;display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto}
+.auth-panel{position:relative;width:min(470px,100%);max-height:calc(100dvh - 32px);overflow:auto;padding:25px 30px 22px;border:1px solid #65404b;border-radius:17px;background:linear-gradient(150deg,#18101a,#0e1019 40%,#111019);box-shadow:0 30px 90px #000d;color:#fff}
+.auth-close{position:absolute;right:18px;top:18px;background:transparent;border:0;color:#fff;padding:5px}
+.auth-logo{display:block;width:185px;max-height:88px;object-fit:contain;margin:0 auto 10px}
+.auth-kicker{text-align:center;color:#ffc25d;letter-spacing:1.9px;font-size:10px;font-weight:900}
+.auth-panel h2{text-align:center;font-size:27px;margin:11px 0 5px}
+.auth-subtitle{text-align:center;font-size:12px;color:#b6b7c2;line-height:1.6;margin:0 0 19px}
+.auth-switch{display:grid;grid-template-columns:1fr 1fr;background:#171925;border:1px solid #353443;border-radius:9px;padding:4px;gap:4px;margin-bottom:20px}
+.auth-switch button{border:0;border-radius:7px;background:transparent;color:#b9bdca;padding:11px;font-weight:800}
+.auth-switch button.active{background:#d90632;color:#fff}
+.auth-form{display:flex;flex-direction:column;gap:14px}
+.auth-form>label:not(.auth-check){display:flex;flex-direction:column;gap:7px;font-size:12px;font-weight:700;color:#f3f0f3}
+.auth-form input:not([type=checkbox]){width:100%;min-width:0;padding:13px;border-radius:8px;background:#1b1d29;color:#fff;border:1px solid #414050;outline:none}
+.auth-form input:focus{border-color:#e42a54}
+.auth-password{display:flex;position:relative}
+.auth-password input{padding-right:48px!important}
+.auth-password button{position:absolute;right:7px;top:5px;bottom:5px;width:37px;border:0;background:transparent;color:#c2c5d0;display:grid;place-items:center}
+.auth-check{display:flex;align-items:flex-start;gap:10px;color:#c9cad3;font-size:11px;line-height:1.5}
+.auth-check input{accent-color:#e50935;margin-top:2px}
+.auth-primary{display:flex;align-items:center;justify-content:center;gap:9px;border:0;border-radius:9px;background:linear-gradient(#fa1541,#c50027);color:white;padding:14px;font-weight:900;margin-top:4px}
+.auth-feedback{display:flex;gap:10px;background:#24202b;border:1px solid #b68a48;border-radius:9px;padding:12px;margin-top:15px;color:#ffcf80}
+.auth-feedback p{color:#c9cad2;font-size:12px;line-height:1.5;margin:5px 0 0}
+.auth-disclaimer{display:flex;align-items:flex-start;gap:7px;color:#aeb3c0;font-size:10px;line-height:1.5;margin-top:17px}
+.auth-disclaimer svg{flex-shrink:0;color:#ffbf51}
+.auth-back{display:flex;align-items:center;justify-content:center;gap:6px;background:transparent;border:0;color:#d5d3db;width:100%;padding:13px 0 0;font-size:12px}
+.auth-panel button:focus-visible{outline:2px solid #ffcf80;outline-offset:2px}
+@media(max-width:520px){.auth-backdrop{padding:10px;align-items:flex-start}.auth-panel{padding:20px 17px;max-height:calc(100dvh - 20px);margin:auto 0}.auth-logo{width:155px}.auth-panel h2{font-size:23px}}
