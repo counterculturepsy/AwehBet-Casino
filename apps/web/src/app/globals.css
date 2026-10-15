@@ -460,3 +460,17 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #ffcf
 @media(max-width:1250px){.slots-lobby-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
 @media(max-width:850px){.slots-lobby .categories{grid-template-columns:repeat(4,minmax(0,1fr))}.slots-masters-hero{height:320px}.slots-masters-hero-content{padding-top:35px}}
 @media(max-width:560px){.slots-lobby .categories{grid-template-columns:repeat(3,minmax(0,1fr))}.slots-lobby-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.slots-masters-hero{height:300px;background-position:65% center}.slots-masters-hero:before{background:linear-gradient(90deg,#08050ad9,#08050a35)}.slots-masters-hero-content{padding:35px 15px 0}.slots-masters-hero h1{font-size:44px}.slots-masters-hero p{font-size:12px}.slots-masters-actions a{padding:10px;font-size:11px}.slots-lobby-content{padding:15px 10px}.slots-lobby-tools{flex-wrap:wrap}.slots-lobby-search{flex-basis:100%}}
+
+/* Expanded Slots Masters catalogue — retain Design 5 colours and cards. */
+.slots-masters-provider-filter{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 14px;color:#ddd;font-size:12px}
+.slots-masters-provider-filter label{font-weight:700}
+.slots-masters-provider-filter select{background:#17151c;color:#fff;border:1px solid #5a2d39;border-radius:7px;padding:10px 32px 10px 12px;min-width:185px}
+.slots-masters-provider-filter>span{color:#aaa;margin-left:auto}
+.slots-lobby-image .slots-masters-placeholder{position:absolute;inset:0;opacity:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:12px;background:radial-gradient(circle at 65% 15%,#61203a,#241324 50%,#0b0b11);color:#fff}
+.slots-masters-placeholder svg{color:#ffcb66;flex-shrink:0}
+.slots-masters-placeholder strong{font-size:clamp(10px,.8vw,15px);line-height:1.15;overflow-wrap:anywhere}
+.slots-masters-placeholder small{font-size:10px;color:#f2c4d2}
+.slots-lobby-image:hover .slots-masters-placeholder{background:radial-gradient(circle at 65% 15%,#892c4b,#301528 50%,#140a15)}
+.slots-masters-load-more{display:block;margin:24px auto 0;padding:13px 28px;background:linear-gradient(#f71c41,#ac0026);border:1px solid #f44b69;border-radius:8px;color:white;font-weight:800;cursor:pointer}
+.slots-masters-load-more:hover{filter:brightness(1.1)}
+@media(max-width:560px){.slots-masters-provider-filter>span{width:100%;margin-left:0}.slots-masters-placeholder strong{font-size:11px}}
