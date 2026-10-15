@@ -126,3 +126,11 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #ffcf
 .mobile-menu{min-width:40px;min-height:40px}
 @media(hover:none){.heart{opacity:1}.play-overlay{opacity:1;background:#b00029dd}}
 @media(max-width:560px){.section-count{font-size:11px}.section-head{gap:8px}.section-head h2{min-width:0}}
+
+/* Artwork audit: Majestic King source contains a narrow adjacent tile on its right.
+   Clip inside its own card and crop the rightmost edge at every viewport width. */
+.slot-card .slot-image-majestic{display:block;position:relative;overflow:hidden;isolation:isolate}
+.slot-card .slot-image-majestic img{width:114%;max-width:none;height:100%;object-fit:cover;object-position:left center;transform:none;transform-origin:left center}
+.slot-card:hover .slot-image-majestic img,.slot-card .slot-image-majestic:hover img{transform:none}
+.slot-grid{min-width:0}
+.slot-card{min-width:0}
