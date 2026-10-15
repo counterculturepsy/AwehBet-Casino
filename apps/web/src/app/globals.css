@@ -228,3 +228,22 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #ffcf
  .slot-card,.promo-card,.live-card{transition:none!important}
  .slot-card:hover{translate:none}
 }
+
+/* Approved Design #5 mobile slot layout: two columns, five rows. */
+@media (max-width: 560px) {
+  #games .slot-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 10px;
+    width: 100%;
+    max-width: 100%;
+  }
+  #games .slot-card,
+  #games .slot-card:last-child:nth-child(3n + 1) {
+    grid-column: auto;
+    min-width: 0;
+    width: 100%;
+  }
+  #games .slot-image { width: 100%; aspect-ratio: 1 / 1; }
+  #games .slot-title { font-size: 12px; line-height: 1.4; text-align: center; }
+}
