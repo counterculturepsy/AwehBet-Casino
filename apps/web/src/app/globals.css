@@ -156,3 +156,40 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #ffcf
 #games .slot-grid .slot-card:nth-child(8) .slot-image:hover img{
   transform:scale(1.14);
 }
+
+
+/* Responsive review phase 2: keep account actions accessible on narrow screens. */
+@media(max-width:850px){
+ .header{height:auto;min-height:70px;flex-wrap:wrap;align-content:center;padding-top:8px;padding-bottom:8px}
+ .navigation{top:100%;z-index:10;grid-template-columns:repeat(4,minmax(0,1fr))}
+ .header .account{margin-left:auto}
+ .header .player-entry{flex-shrink:0}
+ .top-search{display:flex;order:10;flex-basis:100%;width:100%;min-width:0;margin:4px 0}
+ .top-search input{min-width:0}
+}
+@media(max-width:560px){
+ .header{gap:7px}
+ .brand{width:120px}
+ .mobile-menu{margin-left:auto;flex-shrink:0}
+ .header .account{order:4;margin-left:0;flex:1;justify-content:flex-end;min-width:0}
+ .header .account button{white-space:nowrap}
+ .header .player-entry{order:5;max-width:100%;white-space:nowrap}
+ .navigation{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .nav-item{min-width:0}
+ .promos{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+ .promo-card:last-child,.promo-card:nth-child(n+2){display:block}
+ .promo-card{aspect-ratio:3.65}
+ .slot-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .slot-card{min-width:0}
+ .slot-title{overflow-wrap:anywhere}
+ .section-head h2{min-width:0}
+ .live-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .dialog,.deposit-panel,.player-panel,.auth-panel{max-width:100%;box-sizing:border-box}
+}
+@media(max-width:380px){
+ .brand{width:105px}
+ .header .account button{padding:7px 6px;font-size:10px}
+ .categories{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .slot-grid{gap:6px}
+ .section-head h2{font-size:12px}
+}
