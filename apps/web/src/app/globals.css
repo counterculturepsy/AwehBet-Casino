@@ -89,3 +89,22 @@
 .player-foot{border-top:1px solid #34303d;padding:14px 25px;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#aeb1bf;font-size:10px}.player-foot span,.player-foot button{display:flex;align-items:center;gap:7px}.player-foot button{background:transparent;border:0;color:#fff;font-size:11px}
 @media(max-width:850px){.header{flex-wrap:wrap;height:auto;min-height:70px;padding-top:7px;padding-bottom:7px}.header .player-entry{order:10;width:100%;padding:9px}.header .navigation{top:100%}}
 @media(max-width:560px){.header{grid-template-rows:48px auto auto}.header .player-entry{grid-column:1/-1;grid-row:3;min-height:34px}.player-backdrop{padding:9px}.player-panel{max-height:calc(100dvh - 18px)}.player-head{padding:20px 17px 14px}.player-head h2{font-size:23px}.player-tabs{padding:0 7px}.player-tabs button{flex-direction:column;gap:5px;font-size:10px;padding:11px 2px}.player-body{padding:17px}.player-balance{padding:18px}.player-balance strong{font-size:28px}.player-stat-grid{gap:6px}.player-stat-grid>div{padding:10px}.player-stat-grid span{font-size:10px}.player-stat-grid strong{font-size:14px}.player-shortcuts{grid-template-columns:1fr}.player-foot{flex-direction:column;align-items:flex-start;padding:12px 17px}.player-history-right strong{font-size:11px}}
+
+/* Mobile layout polish: centered brand, no duplicate hero logo, complete slot tiles */
+.hero-logo{display:none!important}
+@media(max-width:560px){
+ .header{grid-template-columns:44px minmax(0,1fr) 44px;grid-template-rows:auto auto auto;column-gap:5px;row-gap:7px;padding:12px 12px 11px}
+ .header .brand{grid-column:2;grid-row:1;justify-self:center;display:block;width:min(220px,100%);max-width:100%;min-width:0}
+ .header .brand img{width:100%;max-height:70px;display:block;object-fit:contain}
+ .header .mobile-menu{grid-column:3;grid-row:1;justify-self:end;align-self:center}
+ .header .account{grid-column:1/-1;grid-row:2;grid-template-columns:repeat(3,minmax(0,1fr));min-width:0}
+ .header .player-entry{grid-column:1/-1;grid-row:3;width:100%}
+ .header .navigation{top:100%}
+ .slot-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 9px;width:100%;max-width:100%;overflow:visible}
+ .slot-card{display:flex;flex-direction:column;min-width:0;width:100%;overflow:visible}
+ .slot-image{display:block;width:100%;min-width:0;aspect-ratio:1/1;overflow:hidden;border-radius:7px;flex:none}
+ .slot-image img{display:block;width:100%;height:100%;object-fit:cover}
+ .slot-title{width:100%;overflow-wrap:anywhere;line-height:1.4;margin:8px 0 5px;min-height:2.8em}
+ .slot-card:last-child:nth-child(3n + 1){grid-column:2}
+ #games.content-section{overflow:visible}
+}
