@@ -1,0 +1,10 @@
+{
+  "name": "awehbet",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "dev": "pnpm --filter @awehbet/web dev",
+    "build": "pnpm --filter @awehbet/web build",
+    "typecheck": "pnpm --filter @awehbet/web typecheck"
+  }
+}
