@@ -1,8 +1,11 @@
 'use client';
 
 import Link from 'next/link';
+import DepositCentre from '../deposit-centre';
+import AuthDemo from '../auth-demo';
+import PlayerDashboard from '../player-dashboard';
 import {useMemo,useState} from 'react';
-import {Home,Search,Heart,Gamepad2,X,SlidersHorizontal,Club,Gift,Spade,Star,Crown,Sparkles,Coins,ArrowRight,ShieldCheck,Zap,Gem} from 'lucide-react';
+import {Home,Search,Heart,Gamepad2,X,Club,Gift,Spade,Star,Crown,Sparkles,Coins,ArrowRight,ShieldCheck,Zap,Gem,Menu,Trophy,Plane,Wallet} from 'lucide-react';
 
 const games=[
  {name:'Gates of Olympus 1000',category:'Fantasy',image:1},
@@ -20,6 +23,8 @@ const categories=['All Slots','New Games','Popular','Jackpots','Bonus Buy','Prov
 type Category=typeof categories[number];
 
 export default function SlotsLobby(){
+ const [menu,setMenu]=useState(false);
+ const [modal,setModal]=useState('');
  const [category,setCategory]=useState<Category>('All Slots');
  const [sort,setSort]=useState('popular');
  const [query,setQuery]=useState('');
@@ -33,20 +38,17 @@ export default function SlotsLobby(){
  ).sort((a,b)=>sort==='az'?a.name.localeCompare(b.name):sort==='za'?b.name.localeCompare(a.name):a.image-b.image),[category,query,onlyFavourites,favourites,sort]);
  const toggleFavourite=(name:string)=>setFavourites(previous=>previous.includes(name)?previous.filter(item=>item!==name):[...previous,name]);
  return <main className="slots-lobby" id="top">
-  <header className="slots-lobby-header">
-   <Link href="/" className="slots-lobby-logo" aria-label="AwehBet homepage"><img src="/assets/logo.webp" alt="AwehBet"/></Link>
-   <nav className="slots-lobby-nav" aria-label="Slots lobby navigation"><Link href="/"><Home size={18}/> Home</Link><Link href="/slots" className="current"><Gamepad2 size={18}/> Slots</Link><Link href="/#live"><Club size={18}/> Live Casino</Link><Link href="/#games"><Spade size={18}/> Table Games</Link><Link href="/#promotions"><Gift size={18}/> Promotions</Link></nav>
-   <div className="slots-lobby-account"><Link href="/" className="slots-login">Log In</Link><Link href="/" className="slots-register">Sign Up</Link></div>
-  </header>
+  <header className="header"><Link href="/" className="brand" aria-label="AwehBet home"><img src="/assets/logo.webp" alt="AwehBet official logo"/></Link><button className="mobile-menu" onClick={()=>setMenu(!menu)} aria-label={menu?'Close navigation':'Open navigation'} aria-expanded={menu} aria-controls="slots-navigation">{menu?<X/>:<Menu/>}</button><nav id="slots-navigation" className={menu?'navigation expanded':'navigation'} aria-label="Main navigation">{['Home','Casino','Live Casino','Sports','Aviator','Promotions','Tournaments','VIP'].map((n,i)=>{const Icon=[Home,Gamepad2,Club,Trophy,Plane,Gift,Trophy,Crown][i];return <Link key={n} className={n==='Casino'?'nav-item selected':'nav-item'} href={n==='Home'?'/':n==='Casino'?'/slots':n==='Live Casino'?'/#live':n==='Promotions'||n==='Tournaments'?'/#promotions':'/#games'}><Icon size={18}/><span>{n}</span></Link>})}</nav><label className="top-search"><Search size={18}/><input aria-label="Search slot games" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search games..."/></label><div className="account"><DepositCentre/><button className="outline" onClick={()=>setModal('login')}>Login</button><button className="red" onClick={()=>setModal('register')}>Register</button></div><button className="player-entry" onClick={()=>setModal('dashboard')}><Wallet size={17}/> My Dashboard</button></header>
   <section className="slots-masters-hero" aria-label="Slots Masters Cape Town hero">
    <div className="slots-masters-hero-content">
-    <span className="slots-masters-kicker">PREMIUM ONLINE CASINO</span>
+    <span className="slots-masters-kicker">SOUTH AFRICA’S PREMIUM CASINO</span>
     <h1><span>SLOTS</span><strong>MASTERS</strong></h1>
     <p>Spin into a world of premium slots,<br/>big jackpots and non-stop entertainment.</p>
     <div className="slots-masters-actions"><a href="#featured-slots" className="slots-masters-primary">Play Now <ArrowRight size={19}/></a><a href="#slots-catalogue" className="slots-masters-secondary">View All Slots <ArrowRight size={19}/></a></div>
    </div>
   </section>
-  <section className="slots-masters-benefits" aria-label="Lobby highlights"><span><Crown/> THOUSANDS<br/>OF SLOTS</span><span><Gem/> DAILY<br/>JACKPOTS</span><span><Zap/> NEW<br/>RELEASES</span><span><Star/> TOP<br/>PROVIDERS</span><span><ShieldCheck/> SAFE &amp; SECURE<br/>PLAY</span></section>
+  <section className="trust" aria-label="Lobby highlights"><span><Gift/> Promotions</span><span><ShieldCheck/> Security focused</span><span><Crown/> Local experience</span><span><Star/> Top providers</span><span><Wallet/> Payment integrations planned</span></section>
+  <section className="categories" aria-label="Game categories">{[{name:"Slots",icon:Gamepad2},{name:"Live Casino",icon:Club},{name:"Sports",icon:Trophy},{name:"Aviator",icon:Plane},{name:"Table Games",icon:Spade},{name:"Jackpots",icon:Crown},{name:"All Games",icon:Gamepad2}].map(({name,icon:Icon})=><Link key={name} href={name==="Slots"||name==="All Games"?"/slots":"/#games"} className={name==="Slots"?"category active":"category"}><Icon size={27}/><span>{name}</span></Link>)}</section>
   <section className="slots-lobby-content" id="slots-catalogue" aria-label="Slots catalogue">
    <div className="slots-lobby-tools">
     <label className="slots-lobby-search"><Search size={21}/><input aria-label="Search slot games" placeholder="Search slots, providers or games..." value={query} onChange={event=>setQuery(event.target.value)}/></label>
@@ -64,6 +66,8 @@ export default function SlotsLobby(){
    </article>)}</div>:<div className="slots-lobby-empty"><h2>No games found</h2><p>{onlyFavourites&&favourites.length===0?'Save a game using its heart icon to see it here.':'Try another search, category or turn off the favourites filter.'}</p><button type="button" onClick={()=>{setQuery('');setCategory('All Slots');setOnlyFavourites(false)}}>Clear filters</button></div>}
   </section>
   <footer className="slots-lobby-footer">18+ · AwehBet visual frontend preview · Game artwork is illustrative and not a licensed game integration. No real-money wagering or payment processing.</footer>
+  {modal==='dashboard'&&<PlayerDashboard onClose={()=>setModal('')}/>}
+  {(modal==='login'||modal==='register')&&<AuthDemo mode={modal} onClose={()=>setModal('')} onModeChange={setModal}/>}
   {selected&&<div className="slots-lobby-overlay" onMouseDown={()=>setSelected(null)}><div className="slots-lobby-dialog" role="dialog" aria-modal="true" aria-label={selected} onMouseDown={event=>event.stopPropagation()}><button type="button" className="slots-lobby-close" onClick={()=>setSelected(null)} aria-label="Close game preview"><X/></button><img src="/assets/logo.webp" alt="AwehBet"/><h2>{selected}</h2><p>This is a visual game preview. Game-provider integration is not connected.</p><button type="button" className="slots-lobby-dismiss" onClick={()=>setSelected(null)}>Back to slots</button></div></div>}
  </main>;
 }
