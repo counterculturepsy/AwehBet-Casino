@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
+const PixiSlotsDemo = dynamic(() => import('./pixi-slots-demo'), { ssr: false });
 import {useMemo,useState} from 'react';
 import {Home,Search,Heart,Gamepad2,X,SlidersHorizontal,Club,Gift,Spade,Star,Crown,Sparkles,Coins} from 'lucide-react';
 
@@ -53,6 +55,7 @@ export default function SlotsLobby(){
     {categories.map((item,index)=>{const Icon=[Gamepad2,Star,Sparkles,Crown,Coins,Club][index];return <button key={item} type="button" aria-pressed={category===item} className={category===item?'active':''} onClick={()=>setCategory(item)}><Icon size={16}/>{item}</button>})}
    </div>
    <div className="slots-lobby-toolbar"><div className="slots-lobby-count">{visible.length} {visible.length===1?'game':'games'} found</div><label className="slots-lobby-sort">Sort by: <select aria-label="Sort games" value={sort} onChange={event=>setSort(event.target.value)}><option value="popular">Most Popular</option><option value="az">Name A–Z</option><option value="za">Name Z–A</option></select></label></div>
+   <div style={{margin:'12px 0 20px',padding:16,border:'1px solid #a66d35',borderRadius:12,background:'linear-gradient(90deg,#2a101e,#0e0a10)',display:'flex',alignItems:'center',justifyContent:'space-between',gap:12,flexWrap:'wrap'}}><div><strong style={{color:'#ffd46b'}}>AwehBet Reel Rush</strong><p style={{margin:'6px 0',fontSize:13}}>Play our free 3-reel PixiJS slot demo — no deposits or real money.</p></div><button type="button" className="slots-register" onClick={()=>setSelected('AwehBet Reel Rush')}>PLAY FREE DEMO</button></div>
    {visible.length>0?<div className="slots-lobby-grid">{visible.map(game=><article className="slots-lobby-card" key={game.name}>
     <button type="button" className="slots-lobby-image" onClick={()=>setSelected(game.name)} aria-label={`View ${game.name}`}><img src={`/assets/slot-${game.image}.webp`} alt={game.name}/><span>VIEW GAME</span></button>
     <button type="button" className={favourites.includes(game.name)?'slots-lobby-heart saved':'slots-lobby-heart'} onClick={()=>toggleFavourite(game.name)} aria-label={`${favourites.includes(game.name)?'Remove from':'Add to'} favourites: ${game.name}`} aria-pressed={favourites.includes(game.name)}><Heart size={18} fill={favourites.includes(game.name)?'currentColor':'none'}/></button>
@@ -60,6 +63,7 @@ export default function SlotsLobby(){
    </article>)}</div>:<div className="slots-lobby-empty"><h2>No games found</h2><p>{onlyFavourites&&favourites.length===0?'Save a game using its heart icon to see it here.':'Try another search, category or turn off the favourites filter.'}</p><button type="button" onClick={()=>{setQuery('');setCategory('All Slots');setOnlyFavourites(false)}}>Clear filters</button></div>}
   </section>
   <footer className="slots-lobby-footer">18+ · AwehBet visual frontend preview · Game artwork is illustrative and not a licensed game integration. No real-money wagering or payment processing.</footer>
-  {selected&&<div className="slots-lobby-overlay" onMouseDown={()=>setSelected(null)}><div className="slots-lobby-dialog" role="dialog" aria-modal="true" aria-label={selected} onMouseDown={event=>event.stopPropagation()}><button type="button" className="slots-lobby-close" onClick={()=>setSelected(null)} aria-label="Close game preview"><X/></button><img src="/assets/logo.webp" alt="AwehBet"/><h2>{selected}</h2><p>This is a visual game preview. Game-provider integration is not connected.</p><button type="button" className="slots-lobby-dismiss" onClick={()=>setSelected(null)}>Back to slots</button></div></div>}
+  {selected==='AwehBet Reel Rush'&&<div className="slots-lobby-overlay" onMouseDown={()=>setSelected(null)}><div onMouseDown={event=>event.stopPropagation()} style={{width:'min(420px,100%)'}}><PixiSlotsDemo onClose={()=>setSelected(null)}/></div></div>}
+  {selected&&selected!=='AwehBet Reel Rush'&&<div className="slots-lobby-overlay" onMouseDown={()=>setSelected(null)}><div className="slots-lobby-dialog" role="dialog" aria-modal="true" aria-label={selected} onMouseDown={event=>event.stopPropagation()}><button type="button" className="slots-lobby-close" onClick={()=>setSelected(null)} aria-label="Close game preview"><X/></button><img src="/assets/logo.webp" alt="AwehBet"/><h2>{selected}</h2><p>This is a visual game preview. Game-provider integration is not connected.</p><button type="button" className="slots-lobby-dismiss" onClick={()=>setSelected(null)}>Back to slots</button></div></div>}
  </main>;
 }
