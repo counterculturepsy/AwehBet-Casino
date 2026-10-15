@@ -31,3 +31,23 @@
 .auth-back{display:flex;align-items:center;justify-content:center;gap:6px;background:transparent;border:0;color:#d5d3db;width:100%;padding:13px 0 0;font-size:12px}
 .auth-panel button:focus-visible{outline:2px solid #ffcf80;outline-offset:2px}
 @media(max-width:520px){.auth-backdrop{padding:10px;align-items:flex-start}.auth-panel{padding:20px 17px;max-height:calc(100dvh - 20px);margin:auto 0}.auth-logo{width:155px}.auth-panel h2{font-size:23px}}
+
+/* Auth form legibility and Chrome/Edge autofill overrides */
+.auth-form input:not([type=checkbox]){font-size:14px;line-height:1.45;color:#f9f8fc;background-color:#1b1d29;caret-color:#fff;color-scheme:dark}
+.auth-form input:not([type=checkbox])::placeholder{color:#9da2b1;opacity:1}
+.auth-form input:not([type=checkbox]):-webkit-autofill,
+.auth-form input:not([type=checkbox]):-webkit-autofill:hover,
+.auth-form input:not([type=checkbox]):-webkit-autofill:focus,
+.auth-form input:not([type=checkbox]):-webkit-autofill:active{
+ -webkit-text-fill-color:#f9f8fc!important;
+ -webkit-box-shadow:0 0 0 1000px #1b1d29 inset!important;
+ box-shadow:0 0 0 1000px #1b1d29 inset!important;
+ caret-color:#fff;
+ transition:background-color 9999s ease-out 0s;
+}
+.auth-form>label:not(.auth-check){font-size:13px;gap:8px}
+.auth-check{font-size:12px;line-height:1.65;gap:11px}
+.auth-check input{width:16px;height:16px;flex:0 0 16px;margin-top:2px}
+.auth-disclaimer{font-size:12px;line-height:1.6;gap:9px}
+.auth-back{font-size:13px;padding-top:16px}
+@media(max-width:520px){.auth-panel{padding:20px 18px}.auth-form{gap:15px}.auth-check{font-size:12px}.auth-disclaimer{font-size:11px}}
