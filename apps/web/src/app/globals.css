@@ -247,3 +247,10 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #ffcf
   #games .slot-image { width: 100%; aspect-ratio: 1 / 1; }
   #games .slot-title { font-size: 12px; line-height: 1.4; text-align: center; }
 }
+
+/* Phase 4: game discovery controls */
+.game-discovery-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap}
+.favourites-filter{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid #684250;border-radius:7px;padding:8px 11px;background:#201820;color:#f3c9d0;font-weight:700;font-size:12px;cursor:pointer}
+.favourites-filter:hover,.favourites-filter.active{background:#a90c36;border-color:#ef446b;color:#fff}
+.favourites-filter:focus-visible{outline:2px solid #ffcf80;outline-offset:3px}
+@media(max-width:560px){.game-discovery-actions{gap:6px}.favourites-filter{font-size:11px;padding:7px 8px}}
