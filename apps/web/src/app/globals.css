@@ -119,3 +119,10 @@
  }
  #games .slot-grid .slot-card:last-child .slot-image:hover img{transform:none}
 }
+
+/* Design #5 frontend audit: visible focus, responsive section labels and accessible controls */
+.section-count{color:#bfb8b8;font-size:12px;font-weight:700;white-space:nowrap}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #ffcf80;outline-offset:3px}
+.mobile-menu{min-width:40px;min-height:40px}
+@media(hover:none){.heart{opacity:1}.play-overlay{opacity:1;background:#b00029dd}}
+@media(max-width:560px){.section-count{font-size:11px}.section-head{gap:8px}.section-head h2{min-width:0}}
