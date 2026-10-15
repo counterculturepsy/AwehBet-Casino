@@ -1,5 +1,6 @@
 'use client';
 import { useMemo, useState } from 'react';
+import DepositCentre from './deposit-centre';
 import { Search, Menu, Heart, ShieldCheck, Gamepad2, Sparkles, ArrowRight } from 'lucide-react';
 
 type Game = { id: string; name: string; category: string; accent: string; symbol: string };
@@ -30,7 +31,7 @@ export default function Home() {
       <nav className={menuOpen ? 'nav open' : 'nav'} aria-label="Main navigation">
         <a href="#games">Slots</a><a href="#about">About</a><a href="#responsible">Responsible Play</a>
       </nav>
-      <div className="header-actions"><span className="demo-pill">DEMO PLATFORM</span><button className="menu" onClick={() => setMenuOpen(v => !v)} aria-label="Toggle menu" aria-expanded={menuOpen}><Menu size={22}/></button></div>
+      <div className="header-actions"><DepositCentre/><span className="demo-pill">DEMO PLATFORM</span><button className="menu" onClick={() => setMenuOpen(v => !v)} aria-label="Toggle menu" aria-expanded={menuOpen}><Menu size={22}/></button></div>
     </header>
     <main>
       <section className="hero" aria-labelledby="hero-title"><div className="hero-content">
