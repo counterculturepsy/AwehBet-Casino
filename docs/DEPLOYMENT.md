@@ -47,3 +47,16 @@ Browser journeys to verify after Supabase is configured:
 ## Production blockers
 
 No production deployment may enable real-money functionality until the legal/licensing position, FIC registration and RMCP, POPIA governance, KYC provider, payment/acquiring approval, responsible-gambling operations, private file storage, staff authorization, webhook/reconciliation implementation, penetration test, incident response, and end-to-end live-provider certification are complete.
+
+### Capitec Pay Me direct deposit
+
+The supplied Capitec QR code is intentionally not committed to the public repository. The authenticated asset endpoint fails closed unless all of the following server-only settings are present:
+
+- `PAYMENTS_ENABLED=true`
+- `CAPITEC_DIRECT_DEPOSIT_APPROVED=true`
+- `CAPITEC_RECONCILIATION_ENABLED=true`
+- `CAPITEC_PAYME_QR_SOURCE` points to the approved image
+- `CAPITEC_PAYME_QR_ALLOWED_HOST` matches the exact private-storage hostname
+- `CAPITEC_PAYME_QR_SHA256` matches that image in production
+
+Local development may use an absolute local image path. Production must use an HTTPS source in private, access-controlled storage. Before activation, obtain written confirmation that the merchant account and product are eligible, verify the beneficiary, implement unique-reference reconciliation and duplicate handling, define proof-of-payment and refund procedures, test manual-review queues, and obtain legal and regulatory approval. A static QR transfer must never credit the player wallet merely because the browser reports success.
