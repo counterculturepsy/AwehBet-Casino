@@ -9,8 +9,7 @@ export async function requireAdmin() {
   const { data: { user }, error } = await session.auth.getUser();
   if (error || !user) redirect('/login?next=/admin');
   const service = createServiceSupabaseClient();
-  const { data, error: accessError } = await service.schema('private').from('admin_members')
-    .select('role').eq('user_id', user.id).maybeSingle();
-  if (accessError || !data || !['owner','admin','viewer'].includes(data.role)) notFound();
-  return { user, service, role: data.role as AdminRole };
+  const { data, error: accessError } = await service.rpc('get_admin_role', { p_user_id: user.id });
+  if (accessError || !data || !['owner','admin','viewer'].includes(data)) notFound();
+  return { user, service, role: data as AdminRole };
 }
