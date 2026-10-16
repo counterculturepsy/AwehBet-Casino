@@ -29,7 +29,7 @@ export default function Home() {
     <header className="topbar">
       <a className="logo" href="/" aria-label="AwehBet homepage">AWEH<span>BET</span><small>CASINO</small></a>
       <nav className={menuOpen ? 'nav open' : 'nav'} aria-label="Main navigation">
-        <a href="#games">Slots</a><a href="/professional-demos">Professional Demos</a><a href="#about">About</a><a href="#responsible">Responsible Play</a>
+        <a href="#games">Slots</a><a href="/demo">Professional Demos</a><a href="#about">About</a><a href="#responsible">Responsible Play</a>
       </nav>
       <div className="header-actions"><DepositCentre/><span className="demo-pill">DEMO PLATFORM</span><button className="menu" onClick={() => setMenuOpen(v => !v)} aria-label="Toggle menu" aria-expanded={menuOpen}><Menu size={22}/></button></div>
     </header>
@@ -38,11 +38,11 @@ export default function Home() {
         <div className="eyebrow"><Sparkles size={16}/> BUILT FOR MZANSI</div>
         <h1 id="hero-title">BIG ENERGY.<br/><em>EPIC REELS.</em></h1>
         <p>Welcome to AwehBet — a fresh South African slots experience. Explore our concept lobby while we build.</p>
-        <a className="primary-button" href="/professional-demos">Play professional demos <ArrowRight size={18}/></a>
+        <a className="primary-button" href="/demo">Play professional demos <ArrowRight size={18}/></a>
         <p className="hero-note"><ShieldCheck size={15}/> Concept preview only. No deposits, wagers or cash prizes.</p>
       </div><div className="hero-art" aria-hidden="true"><div className="orb"><span>7</span><span>★</span><span>7</span></div><div className="art-caption">AWESOME STARTS HERE</div></div></section>
       <section className="games-section" id="games" aria-labelledby="games-title">
-        <div className="section-heading"><div><div className="eyebrow">THE LOBBY</div><h2 id="games-title">Explore Slots</h2><p>Explore our original concepts here, or play professional games in the demo lobby.</p></div><a className="game-count" href="/professional-demos">Play professional demos →</a></div>
+        <div className="section-heading"><div><div className="eyebrow">THE LOBBY</div><h2 id="games-title">Explore Slots</h2><p>Explore our original concepts here, or play professional games in the demo lobby.</p></div><a className="game-count" href="/demo">Play professional demos →</a></div>
         <div className="filters"><div className="categories" aria-label="Filter by category">{categories.map(c => <button key={c} className={category === c ? 'chip active' : 'chip'} aria-pressed={category === c} onClick={() => setCategory(c)}>{c}</button>)}</div><label className="search"><Search size={18}/><span className="sr-only">Search games</span><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search games..."/></label></div>
         <div className="game-grid">{filtered.map(game => <article className="game-card" key={game.id}><div className="game-cover" style={{'--accent': game.accent} as React.CSSProperties}><div className="game-symbol" aria-hidden="true">{game.symbol}</div><button className="favourite" onClick={() => toggleFavourite(game.id)} aria-label={favourites.includes(game.id) ? 'Remove ' + game.name + ' from favourites' : 'Add ' + game.name + ' to favourites'} aria-pressed={favourites.includes(game.id)}><Heart size={19} fill={favourites.includes(game.id) ? 'currentColor' : 'none'}/></button><button className="play-overlay" onClick={() => setSelected(game)}>View concept</button></div><div className="game-info"><strong>{game.name}</strong><span>{game.category} · Concept</span></div></article>)}</div>
         {filtered.length === 0 && <p className="empty">No games match your search. Try another title or category.</p>}
