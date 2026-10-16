@@ -1,3 +1,5 @@
+import { assessRealMoneyEligibility, getTrustedPlayerSafetyRecord } from '../player-safety/policy';
+
 /**
  * AwehBet game-aggregator boundary.
  *
@@ -84,5 +86,11 @@ export function assertLaunchAllowed(
       throw new Error('Real-money gameplay is unavailable.');
     }
     if (!request.playerId) throw new Error('An authenticated player is required.');
+    // Fail closed until a trusted server-side player-safety data source is connected.
+    // The request.playerId is not sufficient evidence of eligibility.
+    const decision = assessRealMoneyEligibility(getTrustedPlayerSafetyRecord(), {
+      operatorApproved: false,
+    });
+    if (!decision.allowed) throw new Error(decision.reason);
   }
 }
