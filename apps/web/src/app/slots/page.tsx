@@ -4,7 +4,7 @@ import Link from 'next/link';
 import DepositCentre from '../deposit-centre';
 import AuthDemo from '../auth-demo';
 import PlayerDashboard from '../player-dashboard';
-import {useMemo,useState} from 'react';
+import {useEffect,useMemo,useState} from 'react';
 import {Home,Search,Heart,Gamepad2,X,Club,Gift,Spade,Star,Crown,Sparkles,Coins,ArrowRight,ShieldCheck,Zap,Gem,Menu,Trophy,Plane,Wallet} from 'lucide-react';
 
 type SlotGame={name:string;provider:string;category:string;image?:number;newGame?:boolean;popular?:boolean;jackpot?:boolean;bonusBuy?:boolean};
@@ -67,14 +67,19 @@ export default function SlotsLobby(){
  const [visibleCount,setVisibleCount]=useState(20);
  const [query,setQuery]=useState('');
  const [favourites,setFavourites]=useState<string[]>([]);
+ const [favouritesReady,setFavouritesReady]=useState(false);
+ const [gameType,setGameType]=useState('All types');
+ useEffect(()=>{try{const saved=JSON.parse(window.localStorage.getItem('awehbet:slot-favourites:v1')||'[]');if(Array.isArray(saved))setFavourites(saved.filter((name):name is string=>typeof name==='string'&&games.some(g=>g.name===name)));}catch{}setFavouritesReady(true)},[]);
+ useEffect(()=>{if(favouritesReady){try{window.localStorage.setItem('awehbet:slot-favourites:v1',JSON.stringify(favourites))}catch{}}},[favourites,favouritesReady]);
  const [onlyFavourites,setOnlyFavourites]=useState(false);
  const [selected,setSelected]=useState<string|null>(null);
  const visible=useMemo(()=>games.filter(game=>
    (category==='All Slots'||category==='Providers'||(category==='Popular'&&game.popular)||(category==='New Games'&&game.newGame)||(category==='Jackpots'&&game.jackpot)||(category==='Bonus Buy'&&game.bonusBuy))&&
    (provider==='All Providers'||game.provider===provider)&&
+   (gameType==='All types'||(gameType==='Crash'&&game.category==='Crash')||(gameType==='Slots'&&game.category!=='Crash'))&&
    (game.name.toLowerCase().includes(query.trim().toLowerCase())||game.provider.toLowerCase().includes(query.trim().toLowerCase())||game.category.toLowerCase().includes(query.trim().toLowerCase()))&&
    (!onlyFavourites||favourites.includes(game.name))
- ).sort((a,b)=>sort==='az'?a.name.localeCompare(b.name):sort==='za'?b.name.localeCompare(a.name):sort==='provider'?a.provider.localeCompare(b.provider)||a.name.localeCompare(b.name):games.indexOf(a)-games.indexOf(b)),[category,provider,query,onlyFavourites,favourites,sort]);
+ ).sort((a,b)=>sort==='az'?a.name.localeCompare(b.name):sort==='za'?b.name.localeCompare(a.name):sort==='provider'?a.provider.localeCompare(b.provider)||a.name.localeCompare(b.name):games.indexOf(a)-games.indexOf(b)),[category,provider,gameType,query,onlyFavourites,favourites,sort]);
  const displayed=visible.slice(0,visibleCount);
  const toggleFavourite=(name:string)=>setFavourites(previous=>previous.includes(name)?previous.filter(item=>item!==name):[...previous,name]);
  return <main className="slots-lobby" id="top">
@@ -97,19 +102,19 @@ export default function SlotsLobby(){
    <div className="slots-lobby-categories" aria-label="Filter games by category">
     {categories.map((item,index)=>{const Icon=[Gamepad2,Star,Sparkles,Crown,Coins,Club][index];return <button key={item} type="button" aria-pressed={category===item} className={category===item?'active':''} onClick={()=>{setCategory(item);setVisibleCount(20)}}><Icon size={16}/>{item}</button>})}
    </div>
-   <div className="slots-masters-provider-filter"><label htmlFor="slots-provider-select">Game provider</label><select id="slots-provider-select" value={provider} onChange={event=>{setProvider(event.target.value);setVisibleCount(20)}}><option value="All Providers">All Providers ({providers.length})</option>{providers.map(name=><option key={name} value={name}>{name}</option>)}</select><span>{providers.length} providers · {games.length} catalogue previews</span></div>
+   <div className="slots-masters-provider-filter"><label htmlFor="slots-provider-select">Game provider</label><select id="slots-provider-select" value={provider} onChange={event=>{setProvider(event.target.value);setVisibleCount(20)}}><option value="All Providers">All Providers ({providers.length})</option>{providers.map(name=><option key={name} value={name}>{name}</option>)}</select><label htmlFor="slots-game-type">Game type</label><select id="slots-game-type" value={gameType} onChange={event=>{setGameType(event.target.value);setVisibleCount(20)}}><option>All types</option><option>Slots</option><option>Crash</option></select><span>{providers.length} providers · {games.length} catalogue previews</span></div>
    <div className="slots-masters-featured" id="featured-slots"><h2>Featured <span>Slots</span></h2><span>Explore our games</span></div>
    <div className="slots-lobby-toolbar"><div className="slots-lobby-count">{visible.length} {visible.length===1?'game':'games'} found</div><label className="slots-lobby-sort">Sort by: <select aria-label="Sort games" value={sort} onChange={event=>setSort(event.target.value)}><option value="popular">Most Popular</option><option value="az">Name A–Z</option><option value="za">Name Z–A</option><option value="provider">Provider A–Z</option></select></label></div>
    {visible.length>0?<div className="slots-lobby-grid">{displayed.map(game=><article className="slots-lobby-card" key={game.name}>
-    <button type="button" className="slots-lobby-image" onClick={()=>setSelected(game.name)} aria-label={`View ${game.name}`}>{game.image?<img src={`/assets/slot-${game.image}.webp`} alt={game.name}/>:<span className="slots-masters-placeholder"><Gamepad2 size={32}/><strong>{game.name}</strong><small>{game.provider}</small></span>}<span>VIEW GAME</span></button>
+    <button type="button" className="slots-lobby-image" onClick={()=>setSelected(game.name)} aria-label={`View ${game.name}`}>{game.image?<img src={`/assets/slot-${game.image}.webp`} alt={game.name}/>:<span className="slots-masters-placeholder"><Gamepad2 size={32}/><strong>{game.name}</strong><small>{game.provider}</small></span>}<span>GAME DETAILS</span></button>
     <button type="button" className={favourites.includes(game.name)?'slots-lobby-heart saved':'slots-lobby-heart'} onClick={()=>toggleFavourite(game.name)} aria-label={`${favourites.includes(game.name)?'Remove from':'Add to'} favourites: ${game.name}`} aria-pressed={favourites.includes(game.name)}><Heart size={18} fill={favourites.includes(game.name)?'currentColor':'none'}/></button>
-    <div className="slots-lobby-card-details"><strong>{game.name}</strong><small>{game.provider}</small></div>
-   </article>)}</div>:<div className="slots-lobby-empty"><h2>No games found</h2><p>{onlyFavourites&&favourites.length===0?'Save a game using its heart icon to see it here.':'Try another search, category or turn off the favourites filter.'}</p><button type="button" onClick={()=>{setQuery('');setCategory('All Slots');setOnlyFavourites(false);setProvider('All Providers');setVisibleCount(20)}}>Clear filters</button></div>}
+    <div className="slots-lobby-card-details"><strong>{game.name}</strong><small>{game.provider}</small><small aria-label="Game status">Awaiting provider integration</small></div>
+   </article>)}</div>:<div className="slots-lobby-empty"><h2>No games found</h2><p>{onlyFavourites&&favourites.length===0?'Save a game using its heart icon to see it here.':'Try another search, category or turn off the favourites filter.'}</p><button type="button" onClick={()=>{setQuery('');setCategory('All Slots');setOnlyFavourites(false);setProvider('All Providers');setGameType('All types');setVisibleCount(20)}}>Clear filters</button></div>}
    {visible.length>displayed.length&&<button type="button" className="slots-masters-load-more" onClick={()=>setVisibleCount(count=>count+20)}>Load More Games ({visible.length-displayed.length} remaining)</button>}
   </section>
   <footer className="slots-lobby-footer">18+ · AwehBet visual frontend preview · Additional titles are catalogue previews without licensed game artwork or provider integration. No real-money wagering or payment processing.</footer>
   {modal==='dashboard'&&<PlayerDashboard onClose={()=>setModal('')}/>}
   {(modal==='login'||modal==='register')&&<AuthDemo mode={modal} onClose={()=>setModal('')} onModeChange={setModal}/>}
-  {selected&&<div className="slots-lobby-overlay" onMouseDown={()=>setSelected(null)}><div className="slots-lobby-dialog" role="dialog" aria-modal="true" aria-label={selected} onMouseDown={event=>event.stopPropagation()}><button type="button" className="slots-lobby-close" onClick={()=>setSelected(null)} aria-label="Close game preview"><X/></button><img src="/assets/logo.webp" alt="AwehBet"/><h2>{selected}</h2><p>This is a visual game preview. Game-provider integration is not connected.</p><button type="button" className="slots-lobby-dismiss" onClick={()=>setSelected(null)}>Back to slots</button></div></div>}
+  {selected&&<div className="slots-lobby-overlay" onMouseDown={()=>setSelected(null)}><div className="slots-lobby-dialog" role="dialog" aria-modal="true" aria-label={selected} onMouseDown={event=>event.stopPropagation()}><button type="button" className="slots-lobby-close" onClick={()=>setSelected(null)} aria-label="Close game preview"><X/></button><img src="/assets/logo.webp" alt="AwehBet"/><h2>{selected}</h2><p><strong>Provider:</strong> {games.find(game=>game.name===selected)?.provider}</p><p><strong>Category:</strong> {games.find(game=>game.name===selected)?.category}</p><p><strong>Status:</strong> Awaiting authorised provider integration. No playable demo is connected for this title.</p><button type="button" className="slots-lobby-dismiss" onClick={()=>setSelected(null)}>Back to slots</button></div></div>}
  </main>;
 }
