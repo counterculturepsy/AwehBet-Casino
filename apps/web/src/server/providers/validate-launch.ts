@@ -1,4 +1,4 @@
-import type { DemoLaunchResult } from './contracts.js';
+import type { DemoLaunchResult } from './contracts.ts';
 
 /**
  * Provider responses are untrusted until validated. Configure hosts from the
