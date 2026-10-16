@@ -46,8 +46,8 @@ export const passwordSchema = z.string()
   .regex(/[^A-Za-z0-9]/, 'Include a symbol.');
 
 export const registrationSchema = z.object({
-  firstName: z.string().trim().min(2).max(80),
-  lastName: z.string().trim().min(2).max(80),
+  firstName: z.string().trim().min(2, 'Enter at least two characters.').max(80),
+  lastName: z.string().trim().min(2, 'Enter at least two characters.').max(80),
   birthDate: z.string().refine((value) => isAdult(value), 'You must be at least 18 years old.'),
   documentType: z.enum(['sa-id', 'passport']),
   documentNumber: z.string().trim().transform((value) => value.replace(/\s+/g, '').toUpperCase()),

@@ -12,17 +12,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Request is too large.' }, { status: 413 });
   }
 
+  const parsed = registrationSchema.safeParse(await request.json().catch(() => null));
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Please correct the highlighted information.', fields: parsed.error.flatten().fieldErrors }, { status: 400 });
+  }
+
   try {
     if (!await consumeRateLimit(request, 'register', 5, 3600)) {
       return NextResponse.json({ error: 'Too many attempts. Please try again later.' }, { status: 429 });
     }
   } catch {
     return NextResponse.json({ error: 'Registration is temporarily unavailable.' }, { status: 503 });
-  }
-
-  const parsed = registrationSchema.safeParse(await request.json().catch(() => null));
-  if (!parsed.success) {
-    return NextResponse.json({ error: 'Please correct the highlighted information.', fields: parsed.error.flatten().fieldErrors }, { status: 400 });
   }
 
   const input = parsed.data;

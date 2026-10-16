@@ -501,3 +501,6 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #ffcf
 @media(max-width:900px){.account-shell{grid-template-columns:1fr}.account-sidebar{position:static;height:auto;padding:12px}.account-brand{width:140px;margin-bottom:10px}.account-sidebar nav{display:flex;overflow-x:auto}.account-sidebar nav a{flex:0 0 auto}.account-sidebar>button{margin:10px 0 0}.account-sidebar>p{display:none}.dashboard-stats{grid-template-columns:1fr}.split-panels{grid-template-columns:1fr}.method-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.form-grid.two{grid-template-columns:1fr}.form-links{flex-direction:column}.account-main{padding:22px 13px}.method-grid{grid-template-columns:1fr}.transaction-table .table-row{grid-template-columns:1fr 1fr}.transaction-table .table-row span:nth-child(3){display:none}.table-head{display:none}.restriction-actions{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.spin{animation:none}.account-primary,.method-grid button{transition:none}}
+.header .account>a{display:flex;align-items:center;justify-content:center;padding:13px 25px;font-weight:700;white-space:nowrap}
+@media(max-width:1250px){.header .account>a{padding:12px 15px}}
+@media(max-width:560px){.header .account>a{width:100%;min-width:0;min-height:39px;padding:9px 5px;font-size:12px;text-align:center}}
