@@ -566,3 +566,38 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #ffcf
 .legal-page{min-height:100vh;background:radial-gradient(circle at 85% 0,#3a0712,transparent 35%),#070708;color:#fff;padding:35px 18px}.legal-document{width:min(850px,100%);margin:0 auto;border:1px solid #4f343a;border-radius:18px;background:#100e0f;padding:clamp(24px,5vw,52px)}.legal-document>header{border-bottom:1px solid #3d3033;padding-bottom:20px;margin-bottom:25px}.legal-document img{width:190px;height:auto}.legal-document h1{font-size:clamp(32px,5vw,52px);margin:12px 0}.legal-document h2{margin-top:30px;color:#efc174}.legal-document p,.legal-document li{color:#c3bcbe;line-height:1.7}.draft-badge{display:inline-block;border:1px solid #d19737;border-radius:99px;background:#2b1e09;color:#ffd58d;padding:7px 10px;font-size:10px;font-weight:900;letter-spacing:1px}.legal-back{display:inline-flex;margin-top:25px;color:#ffbd67}
 .legal-markdown h3{margin-top:24px;color:#f2d7aa}.legal-markdown ul{padding-left:22px}.legal-markdown table{display:block;width:100%;max-width:100%;overflow-x:auto;border-collapse:collapse;margin:20px 0}.legal-markdown th,.legal-markdown td{border:1px solid #48363b;padding:11px 13px;text-align:left;vertical-align:top;color:#c9c1c3}.legal-markdown th{background:#25171b;color:#f0ca8a}.legal-markdown strong{color:#f3ecee}.legal-markdown hr{border:0;border-top:1px solid #3d3033;margin:30px 0}
 .capitec-deposit{display:grid;justify-items:center;gap:10px;border:1px solid #5c4650;border-radius:12px;background:#0c1014;padding:18px;text-align:center}.capitec-deposit h2{margin:0;color:#fff;font-size:18px}.capitec-deposit img{width:min(330px,100%);height:auto;border-radius:10px;background:#fff;padding:8px}.capitec-deposit p{max-width:650px;color:#c6bec1}
+
+
+/* Authenticated player overview: Design 5 dashboard refinements. */
+.dashboard-welcome{display:flex;align-items:center;justify-content:space-between;gap:18px}
+.dashboard-profile-link{display:inline-flex;align-items:center;justify-content:center;gap:9px;white-space:nowrap;border:1px solid #6c3943;border-radius:9px;background:#211116;color:#fff;text-decoration:none;padding:12px 15px;font-size:12px;font-weight:800}
+.dashboard-profile-link:hover,.dashboard-profile-link:focus-visible{border-color:#e7b768}
+.dashboard-stats article{min-width:0}.dashboard-stats strong{overflow-wrap:anywhere;font-variant-numeric:tabular-nums}.dashboard-stats small a{display:inline-flex;align-items:center;gap:4px}
+.dashboard-quick-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}
+.dashboard-quick-actions>a{display:flex;align-items:center;gap:12px;min-width:0;border:1px solid #493038;border-radius:11px;padding:15px;background:#100c0e;color:#fff;text-decoration:none}
+.dashboard-quick-actions>a:hover,.dashboard-quick-actions>a:focus-visible{border-color:#e5a958;background:#231318}
+.dashboard-quick-actions>a>svg:first-child{flex:0 0 auto;color:#e7b768;width:22px;height:22px}
+.dashboard-quick-actions>a>svg:last-child{margin-left:auto;flex:0 0 auto;width:16px;height:16px;color:#e7b768}
+.dashboard-quick-actions>a>span{display:grid;gap:4px;min-width:0}.dashboard-quick-actions strong{font-size:13px}.dashboard-quick-actions small{color:#aaa0a3;font-size:11px;line-height:1.45}
+.dashboard-overview-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:18px;align-items:start}
+.dashboard-overview-grid .dashboard-panel{min-width:0}.dashboard-overview-grid .panel-heading a{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.dashboard-account-health h2{margin-bottom:20px}.dashboard-health-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border-bottom:1px solid #35272c;padding:12px 0;font-size:12px}
+.dashboard-health-row span{color:#a99da0}.dashboard-health-row strong{text-align:right;font-size:12px;overflow-wrap:anywhere;max-width:65%}.dashboard-account-health>p:not(.account-eyebrow){color:#bdb0b4;font-size:12px;line-height:1.6}
+.dashboard-health-link{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:14px;color:#f0c17a;text-decoration:none;font-size:12px;font-weight:700}
+.dashboard-health-link:hover{text-decoration:underline}
+@media(max-width:1100px){.dashboard-overview-grid{grid-template-columns:1fr}}
+@media(max-width:700px){.dashboard-welcome{align-items:flex-start;flex-direction:column}.dashboard-profile-link{width:100%}.dashboard-quick-actions{grid-template-columns:1fr}.dashboard-quick-actions>a{min-height:72px}.dashboard-overview-grid{gap:0}}
+@media(max-width:420px){.dashboard-stats article{padding:16px}.dashboard-stats strong{font-size:24px}.dashboard-overview-grid .panel-heading{gap:10px}.dashboard-overview-grid .panel-heading h2{font-size:19px}.dashboard-health-row{flex-wrap:wrap}.dashboard-health-row strong{max-width:100%;text-align:left}}
+
+/* Mobile-friendly transaction history and accessible player navigation. */
+.account-nav-error{color:#ff9aab;font-size:12px;padding:8px 12px}
+.account-sidebar>button:disabled{opacity:.55;cursor:wait}
+.transaction-table .table-row[role="row"]{align-items:center}
+.transaction-table .table-row[role="row"] strong{font-variant-numeric:tabular-nums}
+@media(max-width:600px){
+  .transaction-table .table-row[role="row"]:not(.table-head){display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px 14px;padding:18px 0}
+  .transaction-table .table-row[role="row"] [role="cell"]{display:flex;flex-direction:column;gap:5px;min-width:0;overflow-wrap:anywhere;text-transform:none}
+  .transaction-table .table-row[role="row"] [role="cell"]::before{content:attr(data-label);font-size:10px;font-weight:800;color:#e7b768;text-transform:uppercase;letter-spacing:.7px}
+  .transaction-table .table-row[role="row"] [role="cell"]:nth-child(3){display:flex}
+  .transaction-table .table-row[role="row"] strong[role="cell"]{text-align:left}
+}
