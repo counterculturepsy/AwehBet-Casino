@@ -588,3 +588,16 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #ffcf
 @media(max-width:1100px){.dashboard-overview-grid{grid-template-columns:1fr}}
 @media(max-width:700px){.dashboard-welcome{align-items:flex-start;flex-direction:column}.dashboard-profile-link{width:100%}.dashboard-quick-actions{grid-template-columns:1fr}.dashboard-quick-actions>a{min-height:72px}.dashboard-overview-grid{gap:0}}
 @media(max-width:420px){.dashboard-stats article{padding:16px}.dashboard-stats strong{font-size:24px}.dashboard-overview-grid .panel-heading{gap:10px}.dashboard-overview-grid .panel-heading h2{font-size:19px}.dashboard-health-row{flex-wrap:wrap}.dashboard-health-row strong{max-width:100%;text-align:left}}
+
+/* Mobile-friendly transaction history and accessible player navigation. */
+.account-nav-error{color:#ff9aab;font-size:12px;padding:8px 12px}
+.account-sidebar>button:disabled{opacity:.55;cursor:wait}
+.transaction-table .table-row[role="row"]{align-items:center}
+.transaction-table .table-row[role="row"] strong{font-variant-numeric:tabular-nums}
+@media(max-width:600px){
+  .transaction-table .table-row[role="row"]:not(.table-head){display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px 14px;padding:18px 0}
+  .transaction-table .table-row[role="row"] [role="cell"]{display:flex;flex-direction:column;gap:5px;min-width:0;overflow-wrap:anywhere;text-transform:none}
+  .transaction-table .table-row[role="row"] [role="cell"]::before{content:attr(data-label);font-size:10px;font-weight:800;color:#e7b768;text-transform:uppercase;letter-spacing:.7px}
+  .transaction-table .table-row[role="row"] [role="cell"]:nth-child(3){display:flex}
+  .transaction-table .table-row[role="row"] strong[role="cell"]{text-align:left}
+}
