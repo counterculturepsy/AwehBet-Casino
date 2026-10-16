@@ -1,5 +1,5 @@
 import 'server-only';
-import { ProviderUnavailableError, type DemoGameProvider, type DemoLaunchRequest, type DemoLaunchResult } from './contracts';
+import { ProviderUnavailableError, type DemoGameProvider, type DemoLaunchRequest, type DemoLaunchResult } from './contracts.js';
 
 class UnconfiguredDemoProvider implements DemoGameProvider {
   readonly id = 'unconfigured';
