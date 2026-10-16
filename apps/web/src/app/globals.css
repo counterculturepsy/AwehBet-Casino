@@ -426,3 +426,107 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #ffcf
  .slots-lobby .slots-lobby-image{aspect-ratio:1.18/1}
  .slots-lobby .slots-lobby-content{padding-left:16px;padding-right:16px}
 }
+
+/* Cape Town artwork: use the exact supplied image, with minimal overlay and a readable lobby. */
+.slots-lobby .slots-neon-scene{
+  z-index:-1;
+  top:90px;
+  height:clamp(650px,57vw,1000px);
+  min-height:0;
+  background-image:
+    linear-gradient(180deg,rgba(8,7,19,.02) 0%,rgba(8,7,19,.03) 40%,rgba(8,7,19,.48) 72%,#080713 100%),
+    url('/assets/slots-lobby-neon.webp');
+  background-position:center top;
+  background-size:cover;
+  background-repeat:no-repeat;
+}
+.slots-lobby .slots-lobby-intro{
+  min-height:300px;
+  padding-top:64px;
+}
+.slots-lobby .slots-lobby-intro h1{
+  text-shadow:0 3px 14px #02030c;
+}
+.slots-lobby .slots-lobby-intro p{
+  max-width:490px;
+  text-shadow:0 2px 9px #02030c;
+}
+.slots-lobby .slots-lobby-content{position:relative}
+.slots-lobby .slots-lobby-card{background:#0b0b19ee}
+@media(max-width:1150px){
+ .slots-lobby .slots-neon-scene{top:140px}
+}
+@media(max-width:650px){
+ .slots-lobby .slots-neon-scene{
+   top:132px;
+   height:590px;
+   background-image:
+     linear-gradient(180deg,rgba(8,7,19,.2) 0%,rgba(8,7,19,.3) 35%,#080713 100%),
+     url('/assets/slots-lobby-neon.webp');
+   background-position:64% top;
+ }
+ .slots-lobby .slots-lobby-intro{min-height:270px;padding-top:40px}
+}
+
+/* Slots Masters inherits Design 5 brand, header, trust and category styles. */
+.slots-lobby{min-height:100vh;background:#050505;color:white}
+.slots-lobby .header{position:relative}
+.slots-lobby .header .nav-item{color:white;text-decoration:none}
+.slots-masters-hero{position:relative;height:350px;overflow:hidden;background:#130e1b url('/assets/slots-lobby-neon.webp') center center/cover no-repeat}
+.slots-masters-hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#09060bb8 0%,#09060b60 36%,transparent 65%)}
+.slots-masters-hero-content{position:relative;z-index:1;max-width:550px;padding:32px 0 0 5.7%;text-shadow:0 3px 12px #000}
+.slots-masters-kicker{display:block;letter-spacing:5px;font-size:12px;font-weight:900;color:#ffdfaa;margin-bottom:12px}
+.slots-masters-hero h1{font-size:clamp(46px,5.2vw,76px);line-height:.92;letter-spacing:-2px;margin:0;font-weight:1000}
+.slots-masters-hero h1 span,.slots-masters-hero h1 strong{display:block}
+.slots-masters-hero h1 span{color:#ffdc73;text-shadow:0 3px 2px #6c310b,0 0 12px #ffad42}
+.slots-masters-hero h1 strong{color:#fff;text-shadow:0 3px 2px #30010b,0 0 18px #e90037}
+.slots-masters-hero p{font-size:14px;line-height:1.5;margin:12px 0}
+.slots-masters-actions{display:flex;gap:12px;margin-top:12px}
+.slots-masters-actions a{display:flex;align-items:center;gap:12px;padding:12px 23px;border-radius:8px;font-size:13px;font-weight:900}
+.slots-masters-primary{background:linear-gradient(#ff2144,#c60024)}
+.slots-masters-secondary{background:#080609c9;border:1px solid #ff173a}
+.slots-lobby .categories{grid-template-columns:repeat(7,minmax(0,1fr))}
+.slots-lobby-content{padding:18px 20px 50px}
+.slots-lobby-tools{display:flex;gap:12px;align-items:center;margin:0 0 12px}
+.slots-lobby-search{display:flex;align-items:center;gap:9px;flex:1;background:#09090b;border:1px solid #40333a;border-radius:8px;padding:0 12px;height:44px}
+.slots-lobby-search input{width:100%;border:0;background:transparent;color:white;outline:none;font-size:12px}
+.slots-lobby-favourites{display:flex;align-items:center;gap:8px;background:#131016;color:white;border:1px solid #4d2930;border-radius:8px;padding:12px}
+.slots-lobby-favourites.active{color:#ff3259}
+.slots-lobby-categories{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:15px}
+.slots-lobby-categories button{display:flex;align-items:center;gap:7px;background:linear-gradient(#24242e,#0c0c10);border:1px solid #292a32;border-radius:8px;color:white;padding:10px 15px;font-size:12px;font-weight:700}
+.slots-lobby-categories button.active{border-color:#ff1642;background:linear-gradient(#85021f,#37000c)}
+.slots-masters-featured{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #362025;margin-bottom:12px}
+.slots-masters-featured h2{font-size:16px;margin:10px 0}.slots-masters-featured h2 span{color:#ff1743}.slots-masters-featured>span{font-size:11px;color:#aaa}
+.slots-lobby-toolbar{display:flex;justify-content:space-between;align-items:center;margin:10px 0;color:#bcb2b6;font-size:11px}
+.slots-lobby-sort select{background:#151219;color:white;border:1px solid #423039;border-radius:6px;padding:5px}
+.slots-lobby-grid{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:10px}
+.slots-lobby-card{position:relative;min-width:0}
+.slots-lobby-image{display:block;position:relative;padding:0;border:0;border-radius:6px;overflow:hidden;width:100%;aspect-ratio:.98;background:#19151a}
+.slots-lobby-image img{width:100%;height:100%;object-fit:cover;display:block}
+.slots-lobby-image span{position:absolute;bottom:0;left:0;right:0;background:#d40027ed;padding:8px;color:white;font-size:10px;opacity:0}
+.slots-lobby-image:hover span,.slots-lobby-image:focus-visible span{opacity:1}
+.slots-lobby-heart{position:absolute;right:5px;top:5px;border:0;border-radius:50%;background:#000b;color:white;padding:5px;opacity:0}
+.slots-lobby-card:hover .slots-lobby-heart,.slots-lobby-heart.saved,.slots-lobby-heart:focus-visible{opacity:1}.slots-lobby-heart.saved{color:#ff234c}
+.slots-lobby-card-details{text-align:center;font-size:11px;margin-top:5px}.slots-lobby-card-details strong{display:block;font-size:11px;font-weight:500}.slots-lobby-card-details small{display:block;color:#999;font-size:10px}
+.slots-lobby-empty{text-align:center;padding:40px}.slots-lobby-empty button,.slots-lobby-dismiss{background:#d40027;color:white;border:0;border-radius:8px;padding:12px}
+.slots-lobby-footer{padding:30px;text-align:center;color:#aaa;background:#100b0c;font-size:12px}
+.slots-lobby-overlay{position:fixed;inset:0;z-index:50;background:#000c;display:grid;place-items:center;padding:20px}
+.slots-lobby-dialog{position:relative;background:#191018;border:1px solid #8b233a;border-radius:14px;padding:35px;max-width:440px;text-align:center}
+.slots-lobby-dialog img{max-width:230px}.slots-lobby-close{position:absolute;right:10px;top:10px;background:transparent;border:0;color:white}
+@media(max-width:1250px){.slots-lobby-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(max-width:850px){.slots-lobby .categories{grid-template-columns:repeat(4,minmax(0,1fr))}.slots-masters-hero{height:320px}.slots-masters-hero-content{padding-top:35px}}
+@media(max-width:560px){.slots-lobby .categories{grid-template-columns:repeat(3,minmax(0,1fr))}.slots-lobby-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.slots-masters-hero{height:300px;background-position:65% center}.slots-masters-hero:before{background:linear-gradient(90deg,#08050ad9,#08050a35)}.slots-masters-hero-content{padding:35px 15px 0}.slots-masters-hero h1{font-size:44px}.slots-masters-hero p{font-size:12px}.slots-masters-actions a{padding:10px;font-size:11px}.slots-lobby-content{padding:15px 10px}.slots-lobby-tools{flex-wrap:wrap}.slots-lobby-search{flex-basis:100%}}
+
+/* Expanded Slots Masters catalogue — retain Design 5 colours and cards. */
+.slots-masters-provider-filter{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 14px;color:#ddd;font-size:12px}
+.slots-masters-provider-filter label{font-weight:700}
+.slots-masters-provider-filter select{background:#17151c;color:#fff;border:1px solid #5a2d39;border-radius:7px;padding:10px 32px 10px 12px;min-width:185px}
+.slots-masters-provider-filter>span{color:#aaa;margin-left:auto}
+.slots-lobby-image .slots-masters-placeholder{position:absolute;inset:0;opacity:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:12px;background:radial-gradient(circle at 65% 15%,#61203a,#241324 50%,#0b0b11);color:#fff}
+.slots-masters-placeholder svg{color:#ffcb66;flex-shrink:0}
+.slots-masters-placeholder strong{font-size:clamp(10px,.8vw,15px);line-height:1.15;overflow-wrap:anywhere}
+.slots-masters-placeholder small{font-size:10px;color:#f2c4d2}
+.slots-lobby-image:hover .slots-masters-placeholder{background:radial-gradient(circle at 65% 15%,#892c4b,#301528 50%,#140a15)}
+.slots-masters-load-more{display:block;margin:24px auto 0;padding:13px 28px;background:linear-gradient(#f71c41,#ac0026);border:1px solid #f44b69;border-radius:8px;color:white;font-weight:800;cursor:pointer}
+.slots-masters-load-more:hover{filter:brightness(1.1)}
+@media(max-width:560px){.slots-masters-provider-filter>span{width:100%;margin-left:0}.slots-masters-placeholder strong{font-size:11px}}
