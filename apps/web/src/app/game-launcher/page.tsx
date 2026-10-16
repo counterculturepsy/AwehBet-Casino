@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { Gamepad2, ShieldCheck, ArrowLeft } from 'lucide-react';
 
 const gameIds: Record<string, { id: string; provider: string }> = {
@@ -14,7 +14,7 @@ const gameIds: Record<string, { id: string; provider: string }> = {
 
 type LaunchState = 'idle' | 'checking' | 'unavailable' | 'error';
 
-export default function ProviderGameLauncher() {
+function ProviderGameLauncherContent() {
   const params = useSearchParams();
   const requestedGame = params.get('game')?.trim() ?? '';
   const game = Object.prototype.hasOwnProperty.call(gameIds, requestedGame.toLowerCase())
@@ -70,4 +70,8 @@ export default function ProviderGameLauncher() {
       </section>
     </div>
   </main>;
+}
+
+export default function ProviderGameLauncher() {
+  return <Suspense fallback={<main style={{minHeight:'100vh',background:'#0b090d',color:'#f7f0e8',padding:48}}>Loading game launcher…</main>}><ProviderGameLauncherContent /></Suspense>;
 }
