@@ -12,5 +12,5 @@
     "rewriteRelativeImportExtensions": true,
     "target": "ES2022"
   },
-  "include": ["src/server/slot/**/*.ts"]
+  "include": ["src/server/slot/**/*.ts", "src/server/providers/**/*.ts", "src/server/test/provider-launch-security.test.ts"]
 }
