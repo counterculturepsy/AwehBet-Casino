@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "allowJs": false,
+    "incremental": false,
+    "isolatedModules": false,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "noEmit": false,
+    "outDir": "./dist/test",
+    "rootDir": "./src/server",
+    "rewriteRelativeImportExtensions": true,
+    "target": "ES2022"
+  },
+  "include": ["src/server/slot/**/*.ts"]
+}
