@@ -12,9 +12,9 @@ create index if not exists admin_members_role_idx on private.admin_members(role)
 -- Never insert users based on a browser-provided role, email claim or client input.
 create or replace function public.get_admin_role(p_user_id uuid)
 returns text language sql security definer set search_path = private, pg_temp
-stable as $
+stable as $admin$
   select role from private.admin_members where user_id = p_user_id;
-$;
+$admin$;
 revoke all on function public.get_admin_role(uuid) from public, anon, authenticated;
 grant execute on function public.get_admin_role(uuid) to service_role;
 commit;
