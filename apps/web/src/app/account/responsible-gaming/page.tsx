@@ -1,0 +1,3 @@
+import { ResponsibleGamingForm } from '@/components/account/responsible-gaming-form';
+
+export default function ResponsibleGamingPage() { return <><header className="dashboard-head"><p className="account-eyebrow">RESPONSIBLE GAMING</p><h1>Limits and account restrictions</h1><p>Apply deposit limits, cooling-off periods, or longer self-exclusion restrictions.</p></header><div className="demo-banner serious"><div><strong>Need help now?</strong><p>The South African Responsible Gambling Foundation provides free, confidential support. Call <a href="tel:0800006008">0800 006 008</a> or WhatsApp <a href="https://wa.me/27766750710">076 675 0710</a>. Self-exclusion through an operator or provincial board is a formal process.</p></div></div><ResponsibleGamingForm/></>; }
