@@ -67,6 +67,9 @@ export const registrationSchema = z.object({
   if (value.documentType === 'sa-id' && !isValidSouthAfricanId(value.documentNumber)) {
     context.addIssue({ code: 'custom', path: ['documentNumber'], message: 'Enter a valid South African ID number.' });
   }
+  if (value.documentType === 'sa-id' && value.documentNumber.slice(0, 6) !== value.birthDate.replaceAll('-', '').slice(2)) {
+    context.addIssue({ code: 'custom', path: ['documentNumber'], message: 'The ID number and date of birth do not match.' });
+  }
   if (value.documentType === 'passport' && !PASSPORT.test(value.documentNumber)) {
     context.addIssue({ code: 'custom', path: ['documentNumber'], message: 'Enter a valid passport number.' });
   }

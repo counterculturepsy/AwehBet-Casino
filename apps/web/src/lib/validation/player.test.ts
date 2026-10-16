@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { depositPreviewSchema, isAdult, isValidSouthAfricanId, registrationSchema } from './player';
 
 const validRegistration = {
-  firstName: 'Thandi', lastName: 'Mokoena', birthDate: '1990-05-20', documentType: 'sa-id' as const,
+  firstName: 'Thandi', lastName: 'Mokoena', birthDate: '1980-01-01', documentType: 'sa-id' as const,
   documentNumber: '8001015009087', countryOfResidence: 'ZA', mobilePhone: '0821234567',
   email: 'thandi@example.com', password: 'VeryStrong!234', confirmPassword: 'VeryStrong!234',
   acceptedTerms: true as const, acknowledgedPrivacy: true as const, marketingConsent: false,
@@ -16,6 +16,10 @@ describe('South African player registration', () => {
   it('rejects an invalid identity checksum', () => {
     expect(isValidSouthAfricanId('8001015009088')).toBe(false);
     expect(registrationSchema.safeParse({ ...validRegistration, documentNumber: '8001015009088' }).success).toBe(false);
+  });
+
+  it('rejects an ID number that does not match the supplied birth date', () => {
+    expect(registrationSchema.safeParse({ ...validRegistration, birthDate: '1991-05-20' }).success).toBe(false);
   });
 
   it('rejects underage registration', () => {
