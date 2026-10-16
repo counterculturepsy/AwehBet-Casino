@@ -6,9 +6,9 @@ export const metadata = {
 };
 
 const providers = [
-  { name: 'Pragmatic Play', games: ['Gates of Olympus', 'Sweet Bonanza', 'Big Bass Bonanza'], url: 'https://www.pragmaticplay.com/en/' },
-  { name: "Play'n GO", games: ['Book of Dead'], url: 'https://www.playngo.com/' },
-  { name: 'Hacksaw Gaming', games: ['Wanted Dead or a Wild'], url: 'https://www.hacksawgaming.com/' },
+  { name: 'Pragmatic Play', games: ['Gates of Olympus', 'Sweet Bonanza', 'Big Bass Bonanza'], url: 'https://www.pragmaticplay.com/en/', slug: 'gates-of-olympus' },
+  { name: "Play'n GO", games: ['Book of Dead'], url: 'https://www.playngo.com/', slug: 'book-of-dead' },
+  { name: 'Hacksaw Gaming', games: ['Wanted Dead or a Wild'], url: 'https://www.hacksawgaming.com/', slug: 'wanted-dead-or-a-wild' },
 ];
 
 export default function DemoPage() {
@@ -30,7 +30,7 @@ export default function DemoPage() {
               <h2 style={{color:'#ffd46b',fontSize:24}}>{provider.name}</h2>
               <p style={{lineHeight:1.7}}>{provider.games.join(' · ')}</p>
               <p style={{fontSize:13,color:'#c9bac7'}}>AwehBet demo integration pending provider authorization.</p>
-              <a href={provider.url} target="_blank" rel="noopener noreferrer" style={{color:'#ffd46b'}}>Visit official provider website ↗</a>
+              <Link href={`/demo/play/${provider.slug}`} style={{display:"inline-block",color:"#ffd46b",border:"1px solid #80542b",padding:"10px 14px",borderRadius:8}}>Open game player</Link>
             </article>
           ))}
         </section>
