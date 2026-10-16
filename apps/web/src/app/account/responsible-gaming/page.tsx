@@ -1,0 +1,3 @@
+import { ResponsibleGamingForm } from '@/components/account/responsible-gaming-form';
+
+export default function ResponsibleGamingPage() { return <><header className="dashboard-head"><p className="account-eyebrow">RESPONSIBLE GAMING</p><h1>Limits and account restrictions</h1><p>Apply deposit limits, cooling-off periods, or longer self-exclusion restrictions.</p></header><div className="demo-banner serious"><div><strong>Need immediate help?</strong><p>Stop playing and contact an appropriate responsible-gambling support service. AwehBet must verify and publish local support contacts before launch.</p></div></div><ResponsibleGamingForm/></>; }
