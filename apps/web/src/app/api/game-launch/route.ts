@@ -27,7 +27,7 @@ export async function POST(request: Request) {
 
   const result = await createDemoGameSession({ gameId: input.gameId, mode: 'demo' });
   return NextResponse.json(result, {
-    status: result.reason === 'unknown_game' ? 404 : 503,
+    status: result.status === 'unavailable' ? (result.reason === 'unknown_game' ? 404 : 503) : 200,
     headers: { 'Cache-Control': 'no-store' },
   });
 }
