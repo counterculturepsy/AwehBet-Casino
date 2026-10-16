@@ -1,9 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
-
-const PixiSlotsDemo = dynamic(() => import('./pixi-slots-demo'), { ssr: false });
 import DepositCentre from '../deposit-centre';
 import AuthDemo from '../auth-demo';
 import PlayerDashboard from '../player-dashboard';
@@ -115,11 +112,9 @@ export default function SlotsLobby(){
    </article>)}</div>:<div className="slots-lobby-empty"><h2>No games found</h2><p>{onlyFavourites&&favourites.length===0?'Save a game using its heart icon to see it here.':'Try another search, category or turn off the favourites filter.'}</p><button type="button" onClick={()=>{setQuery('');setCategory('All Slots');setOnlyFavourites(false);setProvider('All Providers');setGameType('All types');setVisibleCount(20)}}>Clear filters</button></div>}
    {visible.length>displayed.length&&<button type="button" className="slots-masters-load-more" onClick={()=>setVisibleCount(count=>count+20)}>Load More Games ({visible.length-displayed.length} remaining)</button>}
   </section>
-  <section aria-label="Free playable demo" style={{margin:'24px auto',maxWidth:1100,padding:'20px 24px',border:'1px solid #674c32',borderRadius:14,background:'linear-gradient(90deg,#2a101e,#0e0a10)',display:'flex',alignItems:'center',justifyContent:'space-between',gap:12,flexWrap:'wrap'}}><div><strong style={{color:'#ffd46b'}}>AwehBet Reel Rush</strong><p style={{margin:'6px 0',fontSize:13}}>Play our free 3-reel PixiJS slot demo — no deposits or real money.</p></div><button type="button" className="slots-lobby-dismiss" onClick={()=>setSelected('AwehBet Reel Rush')}>PLAY FREE DEMO</button></section>
   <footer className="slots-lobby-footer">18+ · AwehBet visual frontend preview · Additional titles are catalogue previews without licensed game artwork or provider integration. No real-money wagering or payment processing.</footer>
   {modal==='dashboard'&&<PlayerDashboard onClose={()=>setModal('')}/>}
   {(modal==='login'||modal==='register')&&<AuthDemo mode={modal} onClose={()=>setModal('')} onModeChange={setModal}/>}
-  {selected==='AwehBet Reel Rush'&&<div className="slots-lobby-overlay" onMouseDown={()=>setSelected(null)}><div onMouseDown={event=>event.stopPropagation()} style={{width:'min(420px,100%)'}}><PixiSlotsDemo onClose={()=>setSelected(null)}/></div></div>}
-  {selected&&selected!=='AwehBet Reel Rush'&&<div className="slots-lobby-overlay" onMouseDown={()=>setSelected(null)}><div className="slots-lobby-dialog" role="dialog" aria-modal="true" aria-label={selected} onMouseDown={event=>event.stopPropagation()}><button type="button" className="slots-lobby-close" onClick={()=>setSelected(null)} aria-label="Close game preview"><X/></button><img src="/assets/logo.webp" alt="AwehBet"/><h2>{selected}</h2><p><strong>Provider:</strong> {games.find(game=>game.name===selected)?.provider}</p><p><strong>Category:</strong> {games.find(game=>game.name===selected)?.category}</p><p><strong>Status:</strong> Awaiting authorised provider integration. No playable demo is connected for this title.</p><Link href={`/game-launcher?game=${encodeURIComponent(selected)}`} className="slots-lobby-dismiss" style={{display:"inline-block",textDecoration:"none",marginRight:12}}>Open game launcher</Link><button type="button" className="slots-lobby-dismiss" onClick={()=>setSelected(null)}>Back to slots</button></div></div>}
+  {selected&&<div className="slots-lobby-overlay" onMouseDown={()=>setSelected(null)}><div className="slots-lobby-dialog" role="dialog" aria-modal="true" aria-label={selected} onMouseDown={event=>event.stopPropagation()}><button type="button" className="slots-lobby-close" onClick={()=>setSelected(null)} aria-label="Close game preview"><X/></button><img src="/assets/logo.webp" alt="AwehBet"/><h2>{selected}</h2><p><strong>Provider:</strong> {games.find(game=>game.name===selected)?.provider}</p><p><strong>Category:</strong> {games.find(game=>game.name===selected)?.category}</p><p><strong>Status:</strong> Awaiting authorised provider integration. No playable demo is connected for this title.</p><Link href={`/game-launcher?game=${encodeURIComponent(selected)}`} className="slots-lobby-dismiss" style={{display:"inline-block",textDecoration:"none",marginRight:12}}>Open game launcher</Link><button type="button" className="slots-lobby-dismiss" onClick={()=>setSelected(null)}>Back to slots</button></div></div>}
  </main>;
 }
