@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { findDemoGame } from '../../../../lib/games/catalogue';
 import { getDemoProvider } from '../../../../server/providers/registry';
 import { ProviderUnavailableError } from '../../../../server/providers/contracts';
+import { validateDemoLaunch } from '../../../../server/providers/validate-launch';
 
 export const runtime = 'nodejs';
 
@@ -31,7 +32,12 @@ export async function POST(request: Request) {
       locale: 'en-ZA',
       returnUrl: new URL('/demo', request.url).toString(),
     });
-    return NextResponse.json(result, { headers: { 'Cache-Control': 'no-store' } });
+    const approvedHosts = (process.env.DEMO_PROVIDER_LAUNCH_HOSTS ?? '')
+      .split(',')
+      .map(host => host.trim())
+      .filter(Boolean);
+    const safeResult = validateDemoLaunch(result, approvedHosts);
+    return NextResponse.json(safeResult, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
     if (error instanceof ProviderUnavailableError) {
       return NextResponse.json({ error: 'Demo provider connection pending' }, { status: 503 });
