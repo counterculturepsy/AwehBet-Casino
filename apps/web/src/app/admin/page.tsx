@@ -1,10 +1,15 @@
 import { BadgeCheck, CircleUserRound, Clock3, ShieldCheck, Wallet } from 'lucide-react';
 import { requireAdmin } from '@/lib/admin';
 
-export default async function AdminPage() {
+export default async function AdminPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const { service } = await requireAdmin();
+  const params = await searchParams;
+  const query = (params.q || '').trim().slice(0, 80);
+  const safeQuery = query.replace(/[%,()]/g, '');
+  const playerQuery = service.from('player_profiles').select('user_id,first_name,last_name,kyc_status,created_at', { count: 'exact' }).order('created_at', { ascending: false }).limit(15);
+  if (safeQuery) playerQuery.or(`first_name.ilike.%${safeQuery}%,last_name.ilike.%${safeQuery}%`);
   const [players, wallets, reviews, deposits, withdrawals] = await Promise.all([
-    service.from('player_profiles').select('user_id,first_name,last_name,kyc_status,created_at', { count: 'exact' }).order('created_at', { ascending: false }).limit(15),
+    playerQuery,
     service.from('wallets').select('id', { count: 'exact', head: true }),
     service.from('player_profiles').select('user_id', { count: 'exact', head: true }).in('kyc_status', ['pending','under_review']),
     service.from('deposit_intents').select('id', { count: 'exact', head: true }).eq('simulated', true),
@@ -23,6 +28,7 @@ export default async function AdminPage() {
       <article><ShieldCheck aria-hidden="true"/><span>Demo withdrawal requests</span><strong>{withdrawals.error ? '—' : withdrawals.count ?? 0}</strong></article>
     </section>
     <section className="dashboard-panel"><div className="panel-heading"><div><p className="account-eyebrow">PLAYER ACCOUNTS</p><h2>Recent registrations</h2></div></div>
+      <form action="/admin" method="get" className="admin-search"><label htmlFor="admin-player-search">Search by first or last name</label><div><input id="admin-player-search" name="q" maxLength={80} defaultValue={query} placeholder="Player name"/><button type="submit">Search</button></div></form>
       {players.error ? <p className="empty-copy">Player records are temporarily unavailable.</p> : !players.data?.length ? <p className="empty-copy">No player profiles have been created.</p> :
       <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th scope="col">Player</th><th scope="col">Verification</th><th scope="col">Registered</th></tr></thead><tbody>
       {players.data.map(player => <tr key={player.user_id}><td>{player.first_name} {player.last_name}</td><td>{player.kyc_status.replace(/_/g, ' ')}</td><td>{new Date(player.created_at).toLocaleDateString('en-ZA')}</td></tr>)}
