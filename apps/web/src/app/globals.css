@@ -171,6 +171,10 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #ffcf
  .header{gap:7px}
  .brand{width:120px}
  .mobile-menu{margin-left:auto;flex-shrink:0}
+ .header .top-search{grid-column:1/-1;grid-row:4;min-width:0;margin:0}
+ .header .top-search svg{flex-shrink:0}
+ .header .top-search input{flex:1;min-width:0}
+ .slots-lobby .header .top-search{display:none}
  .header .account{order:4;margin-left:0;flex:1;justify-content:flex-end;min-width:0}
  .header .account button{white-space:nowrap}
  .header .player-entry{order:5;max-width:100%;white-space:nowrap}

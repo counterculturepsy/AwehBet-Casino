@@ -2,8 +2,6 @@
 
 import Link from 'next/link';
 import DepositCentre from '../deposit-centre';
-import AuthDemo from '../auth-demo';
-import PlayerDashboard from '../player-dashboard';
 import {useEffect,useMemo,useState} from 'react';
 import {Home,Search,Heart,Gamepad2,X,Club,Gift,Spade,Star,Crown,Sparkles,Coins,ArrowRight,ShieldCheck,Zap,Gem,Menu,Trophy,Plane,Wallet} from 'lucide-react';
 
@@ -60,7 +58,7 @@ type Category=typeof categories[number];
 const providers=[...new Set(games.map(game=>game.provider))].sort((a,b)=>a.localeCompare(b));
 export default function SlotsLobby(){
  const [menu,setMenu]=useState(false);
- const [modal,setModal]=useState('');
+
  const [category,setCategory]=useState<Category>('All Slots');
  const [sort,setSort]=useState('popular');
  const [provider,setProvider]=useState('All Providers');
@@ -83,7 +81,7 @@ export default function SlotsLobby(){
  const displayed=visible.slice(0,visibleCount);
  const toggleFavourite=(name:string)=>setFavourites(previous=>previous.includes(name)?previous.filter(item=>item!==name):[...previous,name]);
  return <main className="slots-lobby" id="top">
-  <header className="header"><Link href="/" className="brand" aria-label="AwehBet home"><img src="/assets/logo.webp" alt="AwehBet official logo"/></Link><button className="mobile-menu" onClick={()=>setMenu(!menu)} aria-label={menu?'Close navigation':'Open navigation'} aria-expanded={menu} aria-controls="slots-navigation">{menu?<X/>:<Menu/>}</button><nav id="slots-navigation" className={menu?'navigation expanded':'navigation'} aria-label="Main navigation">{['Home','Casino','Live Casino','Sports','Aviator','Promotions','Tournaments','VIP'].map((n,i)=>{const Icon=[Home,Gamepad2,Club,Trophy,Plane,Gift,Trophy,Crown][i];return <Link key={n} className={n==='Casino'?'nav-item selected':'nav-item'} href={n==='Home'?'/':n==='Casino'?'/slots':n==='Live Casino'?'/#live':n==='Promotions'||n==='Tournaments'?'/#promotions':'/#games'}><Icon size={18}/><span>{n}</span></Link>})}</nav><label className="top-search"><Search size={18}/><input aria-label="Search slot games" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search games..."/></label><div className="account"><DepositCentre/><button className="outline" onClick={()=>setModal('login')}>Login</button><button className="red" onClick={()=>setModal('register')}>Register</button></div><button className="player-entry" onClick={()=>setModal('dashboard')}><Wallet size={17}/> My Dashboard</button></header>
+  <header className="header"><Link href="/" className="brand" aria-label="AwehBet home"><img src="/assets/logo.webp" alt="AwehBet official logo"/></Link><button className="mobile-menu" onClick={()=>setMenu(!menu)} aria-label={menu?'Close navigation':'Open navigation'} aria-expanded={menu} aria-controls="slots-navigation">{menu?<X/>:<Menu/>}</button><nav id="slots-navigation" className={menu?'navigation expanded':'navigation'} aria-label="Main navigation">{['Home','Casino','Live Casino','Sports','Aviator','Promotions','Tournaments','VIP'].map((n,i)=>{const Icon=[Home,Gamepad2,Club,Trophy,Plane,Gift,Trophy,Crown][i];return <Link key={n} className={n==='Casino'?'nav-item selected':'nav-item'} href={n==='Home'?'/':n==='Casino'?'/slots':n==='Live Casino'?'/#live':n==='Promotions'||n==='Tournaments'?'/#promotions':'/#games'}><Icon size={18}/><span>{n}</span></Link>})}</nav><label className="top-search"><Search size={18}/><input aria-label="Search slot games" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search games..."/></label><div className="account"><DepositCentre/><Link className="outline" href="/login">Login</Link><Link className="red" href="/register">Register</Link></div><Link className="player-entry" href="/account"><Wallet size={17}/> My Dashboard</Link></header>
   <section className="slots-masters-hero" aria-label="Slots Masters Cape Town hero">
    <div className="slots-masters-hero-content">
     <span className="slots-masters-kicker">SOUTH AFRICA’S PREMIUM CASINO</span>
@@ -113,8 +111,8 @@ export default function SlotsLobby(){
    {visible.length>displayed.length&&<button type="button" className="slots-masters-load-more" onClick={()=>setVisibleCount(count=>count+20)}>Load More Games ({visible.length-displayed.length} remaining)</button>}
   </section>
   <footer className="slots-lobby-footer">18+ · AwehBet visual frontend preview · Additional titles are catalogue previews without licensed game artwork or provider integration. No real-money wagering or payment processing.</footer>
-  {modal==='dashboard'&&<PlayerDashboard onClose={()=>setModal('')}/>}
-  {(modal==='login'||modal==='register')&&<AuthDemo mode={modal} onClose={()=>setModal('')} onModeChange={setModal}/>}
+
+
   {selected&&<div className="slots-lobby-overlay" onMouseDown={()=>setSelected(null)}><div className="slots-lobby-dialog" role="dialog" aria-modal="true" aria-label={selected} onMouseDown={event=>event.stopPropagation()}><button type="button" className="slots-lobby-close" onClick={()=>setSelected(null)} aria-label="Close game preview"><X/></button><img src="/assets/logo.webp" alt="AwehBet"/><h2>{selected}</h2><p><strong>Provider:</strong> {games.find(game=>game.name===selected)?.provider}</p><p><strong>Category:</strong> {games.find(game=>game.name===selected)?.category}</p><p><strong>Status:</strong> Awaiting authorised provider integration. No playable demo is connected for this title.</p><Link href={`/game-launcher?game=${encodeURIComponent(selected)}`} className="slots-lobby-dismiss" style={{display:"inline-block",textDecoration:"none",marginRight:12}}>Open game launcher</Link><button type="button" className="slots-lobby-dismiss" onClick={()=>setSelected(null)}>Back to slots</button></div></div>}
  </main>;
 }
