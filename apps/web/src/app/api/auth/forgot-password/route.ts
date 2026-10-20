@@ -19,6 +19,13 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: 'Enter a valid email address.' }, { status: 400 });
   const supabase = await createServerSupabaseClient();
   const env = getPublicEnv();
-  await supabase.auth.resetPasswordForEmail(parsed.data.email, { redirectTo: `${env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/reset-password` });
-  return NextResponse.json({ message: 'If the account exists, a recovery email has been sent.' });
+  const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, { redirectTo: `${env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/reset-password` });
+  if (error) {
+    // Keep provider failures private: delivery may only be attempted for existing accounts.
+    console.error('auth.recovery.delivery_failed', {
+      code: error.code && /^[a-z_]{1,80}$/.test(error.code) ? error.code : 'unknown',
+      status: error.status,
+    });
+  }
+  return NextResponse.json({ message: 'Recovery requested. If this address belongs to an account, check your inbox and spam folder. Delivery may be delayed; if no email arrives, contact support.' });
 }
