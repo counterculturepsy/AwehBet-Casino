@@ -36,7 +36,16 @@ export async function POST(request: NextRequest) {
     options: { emailRedirectTo: `${env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/account` },
   });
 
-  if (error || !data.user || data.user.identities?.length === 0) {
+  if (error) {
+    const limited = error.status === 429;
+    return NextResponse.json({
+      error: limited
+        ? 'Registration is temporarily limited by the email service. Please try again later.'
+        : 'Registration could not be completed. Please try again later or contact support.',
+    }, { status: limited ? 429 : 503 });
+  }
+
+  if (!data.user || data.user.identities?.length === 0) {
     return NextResponse.json({ error: 'Unable to create this account. Check the information or sign in instead.' }, { status: 409 });
   }
 
