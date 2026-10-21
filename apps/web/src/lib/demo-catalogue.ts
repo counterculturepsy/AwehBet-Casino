@@ -1,5 +1,4 @@
 import { currentApprovalForGame, mayLaunchApprovedGame } from './game-approval';
-import { currentApprovalForGame, mayLaunchApprovedGame } from './game-approval';
 /**
  * Demo-only provider catalogue. Entries are discovery records, NOT distribution rights.
  * Never enable a URL until the rights holder has approved the precise use.
