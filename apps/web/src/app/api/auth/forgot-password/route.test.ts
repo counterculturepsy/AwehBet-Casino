@@ -44,11 +44,11 @@ describe('password recovery delivery', () => {
     expect(JSON.stringify(vi.mocked(console.error).mock.calls)).not.toContain('recipient@example.test');
   });
 
-  it('keeps a successful request neutral about account existence and uses the recovery callback', async () => {
+  it('keeps a successful request neutral about account existence and uses the token-hash confirmation endpoint', async () => {
     mocks.reset.mockResolvedValue({ error: null });
     const response = await POST(request());
     expect(response.status).toBe(200);
     expect((await response.json()).message).toMatch(/If this address belongs to an account/);
-    expect(mocks.reset).toHaveBeenCalledWith('disposable@example.test', { redirectTo: 'https://example.test/auth/callback?next=/reset-password' });
+    expect(mocks.reset).toHaveBeenCalledWith('disposable@example.test', { redirectTo: 'https://example.test/auth/callback' });
   });
 });
