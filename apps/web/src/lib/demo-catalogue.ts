@@ -1,3 +1,4 @@
+import { currentApprovalForGame, mayLaunchApprovedGame } from './game-approval';
 /**
  * Demo-only provider catalogue. Entries are discovery records, NOT distribution rights.
  * Never enable a URL until the rights holder has approved the precise use.
@@ -26,6 +27,7 @@ export function getDemoGame(slug: string): DemoGame | undefined {
   return demoGames.find(game => game.slug === slug);
 }
 export function approvedExternalDemoUrl(game: DemoGame): string | null {
+  if (!mayLaunchApprovedGame(game.slug, currentApprovalForGame(game.slug))) return null;
   if (game.permission !== 'approved' || game.launchMethod !== 'external' || !game.approvedUrl) return null;
   try {
     const url = new URL(game.approvedUrl);
