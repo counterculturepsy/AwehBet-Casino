@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: 'Enter a valid email address.' }, { status: 400 });
   const supabase = await createServerSupabaseClient();
   const env = getPublicEnv();
-  const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, { redirectTo: `${env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/reset-password` });
+  const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, { redirectTo: `${env.NEXT_PUBLIC_SITE_URL}/auth/callback` });
   if (error) {
     // Keep provider failures private: delivery may only be attempted for existing accounts.
     console.error('auth.recovery.delivery_failed', {
