@@ -5,6 +5,8 @@ on:
   pull_request:
     paths:
       - 'apps/web/**'
+      - 'e2e/**'
+      - 'playwright.config.cjs'
       - 'package.json'
       - 'pnpm-lock.yaml'
       - '.github/workflows/game-launch-verification.yml'
@@ -60,3 +62,12 @@ jobs:
             }
           })().catch(e=>{console.error(e);process.exitCode=1;});
           NODE
+
+      - name: Install pinned Playwright test runner and Chromium
+        run: |
+          npm install --prefix /tmp/awehbet-playwright --no-audit --no-fund @playwright/test@1.56.1
+          /tmp/awehbet-playwright/node_modules/.bin/playwright install --with-deps chromium
+      - name: Browser end-to-end game launch tests
+        env:
+          NODE_PATH: /tmp/awehbet-playwright/node_modules
+        run: /tmp/awehbet-playwright/node_modules/.bin/playwright test --config=playwright.config.cjs
