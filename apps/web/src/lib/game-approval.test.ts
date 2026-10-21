@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { createDemoGameSession } from './provider-launcher';
+import { approvedExternalDemoUrl, demoGames } from './demo-catalogue';
 import { mayLaunchApprovedGame, type ApprovalBundle } from './game-approval';
 import { providerVerifications } from './provider-compliance';
 const date = new Date('2026-10-21T12:00:00Z');
@@ -13,4 +15,16 @@ describe('fail-closed launch approval', () => {
  it('rejects inconsistent game evidence', () => expect(mayLaunchApprovedGame('sweet-bonanza',{...base,game:{...base.game,certification:ev('gates-of-olympus')}},date)).toBe(false));
  it('rejects inconsistent provider', () => expect(mayLaunchApprovedGame('sweet-bonanza',{...base,game:{...base.game,provider:'Hacksaw Gaming'}},date)).toBe(false));
  it('rejects invalid verification dates', () => expect(mayLaunchApprovedGame('sweet-bonanza',{...base,licence:{...ev(),verifiedAt:'invalid'}},date)).toBe(false));
+ it('denies all direct provider demo links', () => {
+   expect(demoGames.every(game => approvedExternalDemoUrl(game) === null)).toBe(true);
+ });
+ it('denies API-backed session creation for a registered title', async () => {
+   expect(await createDemoGameSession({ gameId: 'sweet-bonanza', mode: 'demo' }))
+     .toEqual({ status: 'unavailable', reason: 'approval_required' });
+ });
+ it('rejects inconsistent provider approval flags', () => {
+   expect(mayLaunchApprovedGame('sweet-bonanza', {
+     ...base, provider: { ...base.provider, gameCertification: 'unverified' }
+   }, date)).toBe(false);
+ });
 });
