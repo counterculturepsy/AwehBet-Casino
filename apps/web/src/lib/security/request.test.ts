@@ -1,5 +1,6 @@
 import { describe, expect, it, afterEach, vi } from 'vitest';
 import { NextRequest } from 'next/server';
+vi.mock('@/lib/supabase/server', () => ({ createServiceSupabaseClient: vi.fn() }));
 import { clientKey } from './request';
 
 function req(headers: Record<string,string>) {
