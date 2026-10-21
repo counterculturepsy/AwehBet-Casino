@@ -1,6 +1,8 @@
 -- Sprint 1: explicitly enforce privileged RPC execution grants.
 -- Idempotent: may be applied after the two baseline migrations.
 begin;
+-- Trigger function must not be callable through the public API.
+revoke all on function public.create_player_wallet() from public, anon, authenticated;
 revoke all on function public.consume_rate_limit(char(64), text, integer, integer) from public, anon, authenticated;
 revoke all on function public.post_wallet_transaction(uuid, public.transaction_direction, bigint, text, public.transaction_status, text, text, uuid, boolean) from public, anon, authenticated;
 revoke all on function public.register_player_profile(uuid, text, text, date, char(2), text, text, boolean, text, text, char(64), char(4), char(2)) from public, anon, authenticated;
