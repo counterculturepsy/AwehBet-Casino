@@ -24,7 +24,7 @@ export type ApprovalBundle = {
   game: GameApproval;
 };
 const evidenceValid = (e: Evidence | undefined, provider: string, gameId: string | undefined, now: Date): boolean => {
-  if (!e || e.status !== 'verified' || e.provider !== provider || !e.reference.trim()) return false;
+  if (!e || e.status !== 'verified' || e.provider !== provider || typeof e.reference !== 'string' || !e.reference.trim()) return false;
   if (gameId !== undefined ? e.gameId !== gameId : e.gameId !== undefined) return false;
   if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(e.verifiedAt) ||
       !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(e.expiresAt)) return false;
@@ -44,7 +44,13 @@ export function mayLaunchApprovedGame(gameId: string, bundle?: ApprovalBundle, n
       registered.distributionRights !== 'verified' ||
       registered.demoPermission !== 'verified' ||
       registered.technicalValidation !== 'verified') return false;
-  if (bundle.provider.activationStatus !== registered.activationStatus) return false;
+  if (bundle.provider.activationStatus !== registered.activationStatus ||
+      bundle.provider.licenceStatus !== registered.licenceStatus ||
+      bundle.provider.gameCertification !== registered.gameCertification ||
+      bundle.provider.operatorEligibility !== registered.operatorEligibility ||
+      bundle.provider.distributionRights !== registered.distributionRights ||
+      bundle.provider.demoPermission !== registered.demoPermission ||
+      bundle.provider.technicalValidation !== registered.technicalValidation) return false;
   if (!bundle.game.enabled || bundle.game.gameId !== gameId || bundle.game.provider !== catalogueGame.provider) return false;
   return evidenceValid(bundle.licence, catalogueGame.provider, undefined, now)
     && evidenceValid(bundle.operator, catalogueGame.provider, undefined, now)
