@@ -1,3 +1,4 @@
+import { currentApprovalForGame, mayLaunchApprovedGame } from './game-approval';
 /**
  * Provider-neutral sandbox launch contract.
  * No provider credentials or authorised endpoints are configured yet.
@@ -6,7 +7,7 @@
 export type LaunchMode = 'demo';
 export type LaunchRequest = { gameId: string; mode: LaunchMode };
 export type LaunchResult =
-  | { status: 'unavailable'; reason: 'provider_not_configured' | 'unknown_game' }
+  | { status: 'unavailable'; reason: 'provider_not_configured' | 'unknown_game' | 'approval_required' }
   | { status: 'ready'; launchUrl: string };
 
 const catalogue: Record<string, { provider: string; title: string }> = {
@@ -25,6 +26,7 @@ export async function createDemoGameSession(request: LaunchRequest): Promise<Lau
   if (!getLaunchableGame(request.gameId)) {
     return { status: 'unavailable', reason: 'unknown_game' };
   }
+  if (!mayLaunchApprovedGame(request.gameId, currentApprovalForGame(request.gameId))) return { status: 'unavailable', reason: 'approval_required' };
   // Replace only after a provider contract, approved sandbox API and server-side validation.
   return { status: 'unavailable', reason: 'provider_not_configured' };
 }
