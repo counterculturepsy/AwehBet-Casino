@@ -1,0 +1,73 @@
+name: Game launch verification
+on:
+  push:
+    branches: [feature/authorised-demo-catalogue]
+  pull_request:
+    paths:
+      - 'apps/web/**'
+      - 'e2e/**'
+      - 'playwright.config.cjs'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/game-launch-verification.yml'
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.0.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Complete Vitest suite
+        run: pnpm test
+      - name: TypeScript checks
+        run: pnpm typecheck
+      - name: Production build
+        run: pnpm build
+      - name: Targeted game-launch HTTP smoke test
+        run: |
+          pnpm --filter @awehbet/web start > /tmp/awehbet-next.log 2>&1 &
+          echo $! > /tmp/awehbet-next.pid
+          trap 'kill $(cat /tmp/awehbet-next.pid) || true' EXIT
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:3000/slots >/dev/null; then break; fi
+            sleep 2
+          done
+          node <<'NODE'
+          const assert = require('node:assert/strict');
+          const base = 'http://localhost:3000';
+          (async () => {
+            for (const path of ['/slots','/game-launcher?game=Sweet%20Bonanza','/demo-games','/demo-games/sweet-bonanza']) {
+              const r = await fetch(base+path);
+              assert.equal(r.status,200,path+' expected 200');
+              const html=await r.text();
+              assert(!/<iframe[^>]+src=["']https?:/i.test(html),path+' unexpected remote iframe');
+              console.log('PASS GET',path,r.status);
+            }
+            for (const gameId of ['sweet-bonanza','gates-of-olympus','aviator']) {
+              const r = await fetch(base+'/api/game-launch',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({gameId,mode:'demo'})});
+              assert.equal(r.status,503,gameId+' should be blocked');
+              const json=await r.json();
+              assert.equal(json.reason,'approval_required');
+              console.log('PASS BLOCK',gameId,r.status);
+            }
+          })().catch(e=>{console.error(e);process.exitCode=1;});
+          NODE
+
+      - name: Install pinned Playwright test runner and Chromium
+        run: |
+          npm install --prefix /tmp/awehbet-playwright --no-audit --no-fund @playwright/test@1.56.1
+          /tmp/awehbet-playwright/node_modules/.bin/playwright install --with-deps chromium
+      - name: Browser end-to-end game launch tests
+        env:
+          NODE_PATH: /tmp/awehbet-playwright/node_modules
+        run: /tmp/awehbet-playwright/node_modules/.bin/playwright test --config=playwright.config.cjs

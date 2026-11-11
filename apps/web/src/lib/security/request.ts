@@ -12,9 +12,15 @@ export function assertSameOrigin(request: NextRequest) {
   }
 }
 
-function clientKey(request: NextRequest, action: string) {
-  const forwarded = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
-  const address = forwarded || request.headers.get('x-real-ip') || 'unknown';
+export function clientKey(request: NextRequest, action: string) {
+  // Forwarded IP headers are attacker-controlled unless an upstream proxy
+  // strips incoming copies and writes its own trusted value.
+  // Do not silently trust x-forwarded-for or x-real-ip.
+  const configuredHeader = process.env.TRUSTED_PROXY_IP_HEADER?.trim().toLowerCase();
+  const allowed = new Set(['x-vercel-forwarded-for', 'cf-connecting-ip', 'true-client-ip']);
+  const address = configuredHeader && allowed.has(configuredHeader)
+    ? (request.headers.get(configuredHeader)?.split(',')[0]?.trim() || 'unknown')
+    : 'unknown';
   return createHash('sha256').update(`${action}:${address}`).digest('hex');
 }
 

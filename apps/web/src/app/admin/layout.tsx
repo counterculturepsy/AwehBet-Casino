@@ -4,13 +4,21 @@ import { requireAdmin } from '@/lib/admin';
 
 export const dynamic = 'force-dynamic';
 
+const navigation = [
+  { label: 'Overview', href: '/admin' },
+  { label: 'Providers', href: '/admin/providers' },
+  { label: 'Promotions', href: '/admin/promotions' },
+  { label: 'Player account', href: '/account' },
+  { label: 'Back to website', href: '/' },
+];
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const { role } = await requireAdmin();
   return <div className="admin-shell">
     <aside className="admin-sidebar">
-      <Link href="/" className="admin-brand">AwehBet <span>ADMIN</span></Link>
-      <nav aria-label="Administration"><Link href="/admin">Overview</Link><Link href="/admin/promotions">Promotions</Link><Link href="/account">Player account</Link><Link href="/">Back to website</Link></nav>
-      <p>Role: {role}<br/>Read-only administration</p>
+      <Link href="/" className="admin-brand">AwehBet <span>ADMIN COMMAND CENTRE</span></Link>
+      <nav aria-label="Administration">{navigation.map(item => <Link key={item.href} href={item.href}>{item.label}</Link>)}</nav>
+      <p>Access role: {role}<br/>Compliance and promotions workspace</p>
     </aside>
     <main className="admin-main">{children}</main>
   </div>;
