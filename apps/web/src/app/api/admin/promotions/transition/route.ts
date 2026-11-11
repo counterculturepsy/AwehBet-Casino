@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { assertSameOrigin, consumeRateLimit } from '@/lib/security/request';
 
 const schema = z.object({ id: z.string().uuid(), action: z.enum(['submit','approve','reject']) }).strict();
 
 export async function POST(request: NextRequest) {
-  const origin = request.headers.get('origin');
-  if (!origin || origin !== new URL(request.url).origin) return NextResponse.json({ error: 'Origin not allowed' }, { status: 403 });
+  if (!assertSameOrigin(request)) return NextResponse.json({ error: 'Origin not allowed' }, { status: 403 });
   if (!request.headers.get('content-type')?.toLowerCase().startsWith('application/json')) return NextResponse.json({ error: 'JSON required' }, { status: 415 });
   let raw: string;
   try { raw = await request.text(); } catch { return NextResponse.json({ error: 'Invalid body' }, { status: 400 }); }
@@ -17,6 +17,13 @@ export async function POST(request: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  try {
+    if (!await consumeRateLimit(request, `admin-promotion-transition:${user.id}`, 30, 60)) {
+      return NextResponse.json({ error: 'Too many campaign requests' }, { status: 429 });
+    }
+  } catch {
+    return NextResponse.json({ error: 'Campaign security service unavailable' }, { status: 503 });
+  }
   const { error } = await supabase.rpc('admin_transition_promotion', { p_campaign_id: parsed.data.id, p_action: parsed.data.action });
   if (error) return NextResponse.json({ error: error.code === '42501' ? 'Forbidden' : 'Transition not permitted' }, { status: error.code === '42501' ? 403 : 409 });
   return NextResponse.json({ ok: true }, { headers: { 'Cache-Control': 'no-store' } });

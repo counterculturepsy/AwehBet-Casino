@@ -13,6 +13,11 @@ export default function PromotionsPage() {
   const [saved, setSaved] = useState<Array<{id:string;title:string;status:string;kind:string}>>([]);
   const [feedback, setFeedback] = useState('');
   const [busy, setBusy] = useState(false);
+  const [draftRequestId, setDraftRequestId] = useState<string | null>(null);
+  function updateCampaign(next: Campaign) {
+    setCampaign(next);
+    setDraftRequestId(null);
+  }
   async function refresh() {
     try {
       const response = await fetch('/api/admin/promotions', { cache: 'no-store' });
@@ -25,16 +30,19 @@ export default function PromotionsPage() {
   async function saveDraft() {
     if (errors.length || busy) return;
     setBusy(true); setFeedback('');
+    const idempotencyKey = draftRequestId ?? crypto.randomUUID();
+    if (!draftRequestId) setDraftRequestId(idempotencyKey);
     try {
       const response = await fetch('/api/admin/promotions', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: campaign.title, description: campaign.description, kind: campaign.kind,
           credits: campaign.kind === 'banner' ? 0 : campaign.credits,
+          idempotencyKey,
           start: campaign.start ? new Date(campaign.start).toISOString() : null,
           end: campaign.end ? new Date(campaign.end).toISOString() : null }),
       });
       setFeedback(response.ok ? 'Draft saved for admin review.' : 'Draft could not be saved.');
-      if (response.ok) await refresh();
+      if (response.ok) { setDraftRequestId(null); await refresh(); }
     } catch { setFeedback('Unable to save draft.'); }
     finally { setBusy(false); }
   }
@@ -63,12 +71,12 @@ export default function PromotionsPage() {
     <section className="dashboard-panel" aria-labelledby="campaign-heading">
       <div className="panel-heading"><div><p className="account-eyebrow">CAMPAIGN BUILDER</p><h2 id="campaign-heading">Create a draft</h2></div></div>
       <form className="admin-campaign-form" onSubmit={event => { event.preventDefault(); if (!errors.length) setPreview({ ...campaign }); }}>
-        <label>Campaign type<select value={campaign.kind} onChange={event => setCampaign({ ...campaign, kind: event.target.value as CampaignKind })}><option value="banner">Promotional banner</option><option value="demo-credit">Virtual-credit concept</option></select></label>
-        <label>Title<input maxLength={100} required value={campaign.title} onChange={event => setCampaign({ ...campaign, title: event.target.value })}/></label>
-        <label>Description<textarea maxLength={300} required rows={4} value={campaign.description} onChange={event => setCampaign({ ...campaign, description: event.target.value })}/></label>
-        <div className="admin-campaign-dates"><label>Proposed start<input type="datetime-local" value={campaign.start} onChange={event => setCampaign({ ...campaign, start: event.target.value })}/></label><label>Proposed end<input type="datetime-local" value={campaign.end} onChange={event => setCampaign({ ...campaign, end: event.target.value })}/></label></div>
-        {campaign.kind === 'demo-credit' && <label>Proposed virtual credits<input type="number" min={1} max={100000} step={1} value={campaign.credits} onChange={event => setCampaign({ ...campaign, credits: Number(event.target.value) })}/></label>}
-        <label className="admin-campaign-check"><input type="checkbox" checked={campaign.enabled} onChange={event => setCampaign({ ...campaign, enabled: event.target.checked })}/> Mark draft as ready for review (does not publish)</label>
+        <label>Campaign type<select value={campaign.kind} onChange={event => updateCampaign({ ...campaign, kind: event.target.value as CampaignKind })}><option value="banner">Promotional banner</option><option value="demo-credit">Virtual-credit concept</option></select></label>
+        <label>Title<input maxLength={100} required value={campaign.title} onChange={event => updateCampaign({ ...campaign, title: event.target.value })}/></label>
+        <label>Description<textarea maxLength={300} required rows={4} value={campaign.description} onChange={event => updateCampaign({ ...campaign, description: event.target.value })}/></label>
+        <div className="admin-campaign-dates"><label>Proposed start<input type="datetime-local" value={campaign.start} onChange={event => updateCampaign({ ...campaign, start: event.target.value })}/></label><label>Proposed end<input type="datetime-local" value={campaign.end} onChange={event => updateCampaign({ ...campaign, end: event.target.value })}/></label></div>
+        {campaign.kind === 'demo-credit' && <label>Proposed virtual credits<input type="number" min={1} max={100000} step={1} value={campaign.credits} onChange={event => updateCampaign({ ...campaign, credits: Number(event.target.value) })}/></label>}
+        <label className="admin-campaign-check"><input type="checkbox" checked={campaign.enabled} onChange={event => updateCampaign({ ...campaign, enabled: event.target.checked })}/> Mark draft as ready for review (does not publish)</label>
         {errors.length > 0 && <div className="admin-error" role="alert">{errors.map(error => <p key={error}>{error}</p>)}</div>}
         <button type="submit" disabled={errors.length > 0}>Preview draft</button><button type="button" disabled={errors.length > 0 || busy} onClick={() => void saveDraft()}>Save draft to Supabase</button>
       </form>

@@ -9,12 +9,14 @@ create table if not exists public.promotion_campaigns (
   ends_at timestamptz,
   status text not null default 'draft' check (status in ('draft','submitted','approved','rejected')),
   created_by uuid not null references auth.users(id),
+  idempotency_key uuid not null,
   reviewed_by uuid references auth.users(id),
   reviewed_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   constraint promotion_credit_kind check ((kind = 'banner' and proposed_credits = 0) or (kind = 'demo-credit' and proposed_credits between 1 and 100000)),
-  constraint promotion_date_order check (starts_at is null or ends_at is null or ends_at > starts_at)
+  constraint promotion_date_order check (starts_at is null or ends_at is null or ends_at > starts_at),
+  constraint promotion_campaign_creator_idempotency unique (created_by, idempotency_key)
 );
 create table if not exists public.promotion_audit_events (
   id bigint generated always as identity primary key,
@@ -29,20 +31,38 @@ create index if not exists promotion_campaigns_created_idx on public.promotion_c
 create index if not exists promotion_audit_campaign_idx on public.promotion_audit_events (campaign_id, occurred_at desc);
 alter table public.promotion_campaigns enable row level security;
 alter table public.promotion_audit_events enable row level security;
-revoke all on public.promotion_campaigns from anon, authenticated;
-revoke all on public.promotion_audit_events from anon, authenticated;
-revoke all on sequence public.promotion_audit_events_id_seq from anon, authenticated;
+revoke all on public.promotion_campaigns from public, anon, authenticated;
+revoke all on public.promotion_audit_events from public, anon, authenticated;
+revoke all on sequence public.promotion_audit_events_id_seq from public, anon, authenticated;
+grant select, insert, update on public.promotion_campaigns to service_role;
+grant select, insert on public.promotion_audit_events to service_role;
+grant usage, select on sequence public.promotion_audit_events_id_seq to service_role;
 
 create or replace function public.admin_create_promotion(
-  p_title text, p_description text, p_kind text, p_credits integer,
+  p_title text, p_description text, p_kind text, p_credits integer, p_idempotency_key uuid,
   p_starts_at timestamptz default null, p_ends_at timestamptz default null
 ) returns uuid language plpgsql security definer set search_path = '' as $$
-declare v_id uuid; v_actor uuid := auth.uid(); v_role text;
+declare v_id uuid; v_actor uuid := auth.uid(); v_role text; v_existing public.promotion_campaigns%rowtype;
 begin
   v_role := public.get_admin_role(v_actor);
   if v_actor is null or v_role not in ('owner','admin') then raise exception 'Not authorized' using errcode='42501'; end if;
-  insert into public.promotion_campaigns(title,description,kind,proposed_credits,starts_at,ends_at,created_by)
-  values (btrim(p_title),btrim(p_description),p_kind,p_credits,p_starts_at,p_ends_at,v_actor) returning id into v_id;
+  if p_idempotency_key is null then raise exception 'Idempotency key required' using errcode='22023'; end if;
+  insert into public.promotion_campaigns(title,description,kind,proposed_credits,starts_at,ends_at,created_by,idempotency_key)
+  values (btrim(p_title),btrim(p_description),p_kind,p_credits,p_starts_at,p_ends_at,v_actor,p_idempotency_key)
+  on conflict (created_by,idempotency_key) do nothing returning id into v_id;
+  if v_id is null then
+    select * into strict v_existing from public.promotion_campaigns
+    where created_by=v_actor and idempotency_key=p_idempotency_key;
+    if v_existing.title is distinct from btrim(p_title)
+      or v_existing.description is distinct from btrim(p_description)
+      or v_existing.kind is distinct from p_kind
+      or v_existing.proposed_credits is distinct from p_credits
+      or v_existing.starts_at is distinct from p_starts_at
+      or v_existing.ends_at is distinct from p_ends_at then
+      raise exception 'Idempotency key already used with different campaign data' using errcode='22023';
+    end if;
+    return v_existing.id;
+  end if;
   insert into public.promotion_audit_events(campaign_id,actor_id,action,new_status)
   values(v_id,v_actor,'created','draft');
   return v_id;
@@ -81,9 +101,9 @@ begin
   return query select c.id,c.title,c.description,c.kind,c.proposed_credits,c.status,c.starts_at,c.ends_at,c.created_by,c.created_at
   from public.promotion_campaigns c order by c.created_at desc limit 100;
 end; $$;
-revoke all on function public.admin_create_promotion(text,text,text,integer,timestamptz,timestamptz) from public,anon;
+revoke all on function public.admin_create_promotion(text,text,text,integer,uuid,timestamptz,timestamptz) from public,anon;
 revoke all on function public.admin_transition_promotion(uuid,text) from public,anon;
 revoke all on function public.admin_list_promotions() from public,anon;
-grant execute on function public.admin_create_promotion(text,text,text,integer,timestamptz,timestamptz) to authenticated;
+grant execute on function public.admin_create_promotion(text,text,text,integer,uuid,timestamptz,timestamptz) to authenticated;
 grant execute on function public.admin_transition_promotion(uuid,text) to authenticated;
 grant execute on function public.admin_list_promotions() to authenticated;
