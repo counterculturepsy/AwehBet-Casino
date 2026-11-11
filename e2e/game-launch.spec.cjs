@@ -23,6 +23,7 @@ function monitorLaunchEscapes(page) {
    record('external-navigation-request', url);
  });
  page.on('response', response => {
+  if (!response.request().isNavigationRequest()) return;
   if (response.status() >= 300 && response.status() < 400) {
    const location = response.headers()['location'];
    if (location) {
