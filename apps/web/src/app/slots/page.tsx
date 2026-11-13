@@ -91,6 +91,7 @@ export default function SlotsLobby(){
    </div>
   </section>
   <section className="trust" aria-label="Lobby highlights"><span><Gift/> Promotions</span><span><ShieldCheck/> Security focused</span><span><Crown/> Local experience</span><span><Star/> Top providers</span><span><Wallet/> Payment integrations planned</span></section>
+  <section className="provider-demo-callout" aria-labelledby="provider-demo-title"><div><span>PROVIDER INTEGRATION</span><h2 id="provider-demo-title">Secure demo lobby</h2><p>Review candidate original titles and the fail-closed provider launch experience. Sandbox access remains disabled until authorised credentials and catalogue IDs are supplied.</p></div><Link href="/demo">Explore demo catalogue <ArrowRight size={18}/></Link></section>
   <section className="categories" aria-label="Game categories">{[{name:"Slots",icon:Gamepad2},{name:"Live Casino",icon:Club},{name:"Sports",icon:Trophy},{name:"Aviator",icon:Plane},{name:"Table Games",icon:Spade},{name:"Jackpots",icon:Crown},{name:"All Games",icon:Gamepad2}].map(({name,icon:Icon})=><Link key={name} href={name==="Slots"||name==="All Games"?"/slots":"/#games"} className={name==="Slots"?"category active":"category"}><Icon size={27}/><span>{name}</span></Link>)}</section>
   <section className="slots-lobby-content" id="slots-catalogue" aria-label="Slots catalogue">
    <div className="slots-lobby-tools">

@@ -1,15 +1,10 @@
 import { NextRequest } from 'next/server';
 import { createHash } from 'node:crypto';
 import { createServiceSupabaseClient } from '@/lib/supabase/server';
+import { isSameOriginRequest } from '@/lib/security/same-origin';
 
 export function assertSameOrigin(request: NextRequest) {
-  const origin = request.headers.get('origin');
-  if (!origin) return false;
-  try {
-    return new URL(origin).origin === request.nextUrl.origin;
-  } catch {
-    return false;
-  }
+  return isSameOriginRequest(request.headers, request.nextUrl);
 }
 
 function clientKey(request: NextRequest, action: string) {
