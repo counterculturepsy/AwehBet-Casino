@@ -66,7 +66,7 @@ describe('promotion draft API security', () => {
     mocks.consumeRateLimit.mockRejectedValue(new Error('database unavailable'));
     const response = await POST(request());
     expect(response.status).toBe(503);
-    expect(await response.json()).toEqual({ error: 'Campaign security service unavailable' });
+    expect(await response.json()).toEqual({ error: 'Campaign security service unavailable', code: 'unavailable' });
     expect(mocks.rpc).not.toHaveBeenCalled();
   });
 

@@ -1,59 +1,61 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
-import { assertSameOrigin, consumeRateLimit } from '@/lib/security/request';
+import { NextRequest } from 'next/server';
+import { enforceRateLimit, getSessionUser, jsonError, jsonOk, mapRpcError, readGuardedJson } from '@/lib/promotions/api';
+import { decodeCursor, encodeCursor, type CursorPosition } from '@/lib/promotions/cursor';
+import { createCampaignSchema, parseSearchParams } from '@/lib/promotions/schemas';
+import type { CampaignRow } from '@/lib/promotions/types';
 
 export const dynamic = 'force-dynamic';
 
-const schema = z.object({
-  title: z.string().trim().min(1).max(100),
-  description: z.string().trim().min(1).max(300),
-  kind: z.enum(['banner','demo-credit']),
-  credits: z.number().int().min(0).max(100000),
-  idempotencyKey: z.string().uuid(),
-  start: z.string().datetime({ offset: true }).nullable(),
-  end: z.string().datetime({ offset: true }).nullable(),
-}).strict().refine(v => (v.kind === 'banner' && v.credits === 0) || (v.kind === 'demo-credit' && v.credits >= 1), 'Invalid credit amount')
-  .refine(v => !v.start || !v.end || Date.parse(v.end) > Date.parse(v.start), 'Invalid schedule');
-
-async function session() {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  return { supabase, user };
-}
-export async function GET() {
-  const { supabase, user } = await session();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const { data, error } = await supabase.rpc('admin_list_promotions');
-  if (error) return NextResponse.json({ error: 'Unable to load campaigns' }, { status: error.code === '42501' ? 403 : 503 });
-  return NextResponse.json({ campaigns: data }, { headers: { 'Cache-Control': 'no-store' } });
-}
-export async function POST(request: NextRequest) {
-  if (!assertSameOrigin(request)) return NextResponse.json({ error: 'Origin not allowed' }, { status: 403 });
-  if (!request.headers.get('content-type')?.toLowerCase().startsWith('application/json')) return NextResponse.json({ error: 'JSON required' }, { status: 415 });
-  if (Number(request.headers.get('content-length') || 0) > 4096) return NextResponse.json({ error: 'Payload too large' }, { status: 413 });
-  let body: unknown;
-  try { const raw = await request.text(); if (raw.length > 4096) return NextResponse.json({ error: 'Payload too large' }, { status: 413 }); body = JSON.parse(raw); }
-  catch { return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 }); }
-  const parsed = schema.safeParse(body);
-  if (!parsed.success) return NextResponse.json({ error: 'Invalid campaign data' }, { status: 400 });
-  const { supabase, user } = await session();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  try {
-    if (!await consumeRateLimit(request, `admin-promotion-create:${user.id}`, 10, 60)) {
-      return NextResponse.json({ error: 'Too many campaign requests' }, { status: 429 });
-    }
-  } catch {
-    return NextResponse.json({ error: 'Campaign security service unavailable' }, { status: 503 });
+export async function GET(request: NextRequest) {
+  const { supabase, user } = await getSessionUser();
+  if (!user) return jsonError(401, 'Unauthorized');
+  const parsed = parseSearchParams(request.nextUrl.searchParams);
+  if (!parsed.ok) return jsonError(400, 'Invalid search parameters', 'invalid');
+  const query = parsed.value;
+  let position: CursorPosition | null = null;
+  if (query.cursor) {
+    position = decodeCursor(query.cursor, query);
+    if (!position) return jsonError(400, 'Invalid cursor', 'invalid_cursor');
   }
+  // One extra row tells us whether another page exists without a second count query.
+  const { data, error } = await supabase.rpc('admin_search_promotions', {
+    p_search: query.search ?? null,
+    p_status: query.status ?? null,
+    p_kind: query.kind ?? null,
+    p_created_by: query.createdBy ?? null,
+    p_created_from: query.createdFrom ?? null,
+    p_created_to: query.createdTo ?? null,
+    p_updated_from: query.updatedFrom ?? null,
+    p_updated_to: query.updatedTo ?? null,
+    p_sort: query.sort,
+    p_limit: query.limit + 1,
+    p_cursor_ts: position?.timestamp ?? null,
+    p_cursor_id: position?.id ?? null,
+  });
+  if (error) return mapRpcError(error, 'search');
+  const rows = (data ?? []) as CampaignRow[];
+  const campaigns = rows.slice(0, query.limit);
+  const last = campaigns[campaigns.length - 1];
+  const nextCursor = rows.length > query.limit && last
+    ? encodeCursor(query, { timestamp: query.sort.startsWith('updated') ? last.updated_at : last.created_at, id: last.id })
+    : null;
+  return jsonOk({ campaigns, nextCursor, pageSize: query.limit });
+}
+
+export async function POST(request: NextRequest) {
+  const guarded = await readGuardedJson(request);
+  if (!guarded.ok) return guarded.response;
+  const parsed = createCampaignSchema.safeParse(guarded.body);
+  if (!parsed.success) return jsonError(400, 'Invalid campaign data', 'invalid');
+  const { supabase, user } = await getSessionUser();
+  if (!user) return jsonError(401, 'Unauthorized');
+  const limited = await enforceRateLimit(request, `admin-promotion-create:${user.id}`, 10, 60);
+  if (limited) return limited;
   const v = parsed.data;
   const { data, error } = await supabase.rpc('admin_create_promotion', {
     p_title: v.title, p_description: v.description, p_kind: v.kind, p_credits: v.credits,
     p_idempotency_key: v.idempotencyKey, p_starts_at: v.start, p_ends_at: v.end,
   });
-  if (error) {
-    const status = error.code === '42501' ? 403 : error.code === '22023' ? 409 : 503;
-    return NextResponse.json({ error: status === 403 ? 'Forbidden' : status === 409 ? 'Request conflicts with an existing draft' : 'Unable to save draft' }, { status });
-  }
-  return NextResponse.json({ id: data, status: 'draft' }, { status: 201, headers: { 'Cache-Control': 'no-store' } });
+  if (error) return mapRpcError(error, 'create');
+  return jsonOk({ id: data, status: 'draft' }, 201);
 }
