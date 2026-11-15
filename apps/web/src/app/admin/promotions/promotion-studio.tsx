@@ -136,9 +136,15 @@ export function PromotionStudio({ role, viewerId, initialQuery }: Props) {
   });
 
   const handleTransition = (action: 'submit' | 'approve' | 'reject', row: CampaignRow) => perform(async () => {
-    const result = await transitionCampaign(row.id, action);
-    if (!result.ok) fail(failureMessage(result.code));
-    else succeed('Campaign status updated.');
+    // Submit names the version this row was loaded at, so a draft edited by someone else is not submitted unseen.
+    const result = action === 'submit'
+      ? await transitionCampaign(row.id, 'submit', row.version)
+      : await transitionCampaign(row.id, action);
+    if (!result.ok) {
+      fail(result.code === 'stale_version'
+        ? 'This campaign changed after you loaded it. The list has been refreshed; review the latest version, then submit again.'
+        : failureMessage(result.code));
+    } else succeed('Campaign status updated.');
     if (editing?.id === row.id) stopEditing();
     // Status and updated-time filters may no longer include this row after the transition.
     await list.reload();

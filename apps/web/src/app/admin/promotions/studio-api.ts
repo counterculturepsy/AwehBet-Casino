@@ -74,7 +74,12 @@ export const updateDraft = (id: string, payload: CampaignPayload, expectedVersio
 export const duplicateCampaign = (id: string, idempotencyKey: string) =>
   call<{ id: string; status: 'draft'; duplicatedFrom: string }>(`${BASE}/${id}/duplicate`, jsonInit('POST', { idempotencyKey }), hasString('id'));
 
-export const transitionCampaign = (id: string, action: 'submit' | 'approve' | 'reject') =>
-  call<{ ok: true }>(`${BASE}/transition`, jsonInit('POST', { id, action }));
+/** Submit must name the version the administrator reviewed; approve and reject act on a frozen submission. */
+export function transitionCampaign(id: string, action: 'submit', expectedVersion: number): Promise<ApiResult<{ ok: true }>>;
+export function transitionCampaign(id: string, action: 'approve' | 'reject'): Promise<ApiResult<{ ok: true }>>;
+export function transitionCampaign(id: string, action: 'submit' | 'approve' | 'reject', expectedVersion?: number) {
+  const body = action === 'submit' ? { id, action, expectedVersion } : { id, action };
+  return call<{ ok: true }>(`${BASE}/transition`, jsonInit('POST', body));
+}
 
 export const fetchHistory = (id: string) => call<{ events: HistoryEvent[] }>(`${BASE}/${id}/history`, undefined, isHistory);

@@ -25,10 +25,12 @@ insert into private.admin_members(user_id,role) values
   ('dddddddd-0000-4000-8000-000000000002','owner'),
   ('eeeeeeee-0000-4000-8000-000000000003','viewer');
 
+-- Rows that already exist (none on a fresh chain, the seeded legacy rows in upgrade mode) must all be listable.
+select count(*) as preexisting_campaigns from public.promotion_campaigns \gset
 set role authenticated;
 set request.jwt.claim.sub = 'eeeeeeee-0000-4000-8000-000000000003';
 insert into _promotion_results
-select 'viewer can list campaigns through the authorized RPC', count(*) = 0
+select 'viewer can list campaigns through the authorized RPC', count(*) = :preexisting_campaigns
 from public.admin_list_promotions();
 select pg_temp.expect_state(
   $q$select public.admin_create_promotion('Viewer draft','Denied','banner',0,'10000000-0000-4000-8000-000000000001',null,null)$q$,
@@ -53,9 +55,9 @@ insert into _promotion_results values (
 select pg_temp.expect_state(
   $q$select public.admin_create_promotion('Changed title','Free-to-play banner','banner',0,'10000000-0000-4000-8000-000000000002',null,null)$q$,
   '22023', 'idempotency key cannot be reused for different campaign data');
-select public.admin_transition_promotion(:'admin_campaign_id'::uuid,'submit');
+select public.admin_transition_promotion(:'admin_campaign_id'::uuid,'submit',1);
 select pg_temp.expect_state(
-  format('select public.admin_transition_promotion(%L::uuid,%L)', :'admin_campaign_id', 'submit'),
+  format('select public.admin_transition_promotion(%L::uuid,%L,2)', :'admin_campaign_id', 'submit'),
   '22023', 'duplicate submission is rejected by the state machine');
 
 set request.jwt.claim.sub = 'dddddddd-0000-4000-8000-000000000002';
@@ -64,7 +66,7 @@ select public.admin_create_promotion(
   'Owner draft','Owner-created campaign','banner',0,
   '10000000-0000-4000-8000-000000000003',null,null
 ) as owner_campaign_id \gset
-select public.admin_transition_promotion(:'owner_campaign_id'::uuid,'submit');
+select public.admin_transition_promotion(:'owner_campaign_id'::uuid,'submit',1);
 select pg_temp.expect_state(
   format('select public.admin_transition_promotion(%L::uuid,%L)', :'owner_campaign_id', 'approve'),
   '42501', 'campaign creator cannot approve own campaign');
@@ -207,9 +209,11 @@ select 'rejected and unchanged edits leave version and audit history untouched',
 from public.promotion_campaigns c where c.id = :'invalid_id'::uuid;
 
 -- Submitted, approved and rejected campaigns are not editable: editing cannot bypass the approval workflow.
+reset role;
+select version as edit_version from public.promotion_campaigns where id = :'edit_id'::uuid \gset
 set role authenticated;
 set request.jwt.claim.sub = :'admin';
-select public.admin_transition_promotion(:'edit_id'::uuid,'submit');
+select public.admin_transition_promotion(:'edit_id'::uuid,'submit',:edit_version);
 select pg_temp.expect_state(
   format('select public.admin_update_promotion(%L::uuid,4,%L,%L,%L,0,null,null)', :'edit_id', 'Edit after submit', 'Original description', 'banner'),
   '22023', 'submitted campaign is not editable by its creator');
@@ -222,7 +226,7 @@ select pg_temp.expect_state(
   '22023', 'approved campaign is not editable');
 set request.jwt.claim.sub = :'admin';
 select public.admin_create_promotion('Will be rejected','Rejected fixture','banner',0,'20000000-0000-4000-8000-000000000003',null,null) as rejected_id \gset
-select public.admin_transition_promotion(:'rejected_id'::uuid,'submit');
+select public.admin_transition_promotion(:'rejected_id'::uuid,'submit',1);
 set request.jwt.claim.sub = :'owner';
 select public.admin_transition_promotion(:'rejected_id'::uuid,'reject');
 select pg_temp.expect_state(
@@ -413,7 +417,7 @@ select pg_temp.check_actions('creator admin is offered only duplicate on own sub
 set request.jwt.claim.sub = :'admin2';
 select pg_temp.check_actions('non-creator admin is offered only duplicate on another admin draft', :'parity_id'::uuid, array['duplicate']);
 select pg_temp.check_actions('non-creator admin cannot approve or reject a submitted campaign', :'edit_id'::uuid, array['duplicate']);
-select pg_temp.expect_state(format('select public.admin_transition_promotion(%L::uuid,%L)', :'parity_id', 'submit'), '42501', 'enforcement matches: non-creator admin cannot submit another admin draft');
+select pg_temp.expect_state(format('select public.admin_transition_promotion(%L::uuid,%L,1)', :'parity_id', 'submit'), '42501', 'enforcement matches: non-creator admin cannot submit another admin draft');
 select pg_temp.expect_state(format('select public.admin_transition_promotion(%L::uuid,%L)', :'edit_id', 'approve'), '22023', 'enforcement matches: admin role cannot approve');
 set request.jwt.claim.sub = :'owner';
 select pg_temp.check_actions('owner is offered edit, submit and duplicate on any draft', :'parity_id'::uuid, array['edit','submit','duplicate']);
@@ -527,7 +531,7 @@ select pg_temp.expect_state(
 set role authenticated;
 set request.jwt.claim.sub = :'admin';
 select pg_temp.expect_state(
-  $q$select public.admin_transition_promotion(gen_random_uuid(),'submit')$q$,
+  $q$select public.admin_transition_promotion(gen_random_uuid(),'submit',1)$q$,
   'P0002', 'transition on an unknown campaign reports it as unavailable, like the other RPCs');
 reset role;
 
@@ -539,7 +543,7 @@ select pg_temp.expect_state(
   $q$select public.admin_create_promotion('NoRole probe','Must never exist','banner',0,'50000000-0000-4000-8000-000000000001',null,null)$q$,
   '42501', 'no-role user cannot create a campaign');
 select pg_temp.expect_state(
-  format('select public.admin_transition_promotion(%L::uuid,%L)', :'parity_id', 'submit'),
+  format('select public.admin_transition_promotion(%L::uuid,%L,1)', :'parity_id', 'submit'),
   '42501', 'no-role user cannot submit another user''s draft');
 select pg_temp.expect_state(
   $q$select * from public.admin_list_promotions()$q$,
@@ -569,6 +573,88 @@ select 'every promotion RPC pins an empty search_path',
   count(*) = 8 and bool_and(coalesce(p.proconfig, '{}') @> array['search_path=""'])
 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
 where n.nspname = 'public' and p.proname in ('admin_create_promotion','admin_transition_promotion','admin_update_promotion','admin_duplicate_promotion','admin_list_promotions','admin_search_promotions','admin_get_promotion','admin_promotion_history');
+
+-- ---- Version-checked submit --------------------------------------------------------------------------
+-- Submitting freezes a draft into review, so the caller must name the version it reviewed.
+set role authenticated;
+set request.jwt.claim.sub = :'admin';
+select public.admin_create_promotion('Versioned submit','Submit version fixture','banner',0,'60000000-0000-4000-8000-000000000001',null,null) as vs_id \gset
+select public.admin_update_promotion(:'vs_id'::uuid, 1, 'Versioned submit v2', 'Submit version fixture', 'banner', 0, null, null);
+select pg_temp.expect_state(format('select public.admin_transition_promotion(%L::uuid,%L)', :'vs_id', 'submit'),
+  '22023', 'submit without an expected version is rejected');
+select pg_temp.expect_state(format('select public.admin_transition_promotion(%L::uuid,%L,null)', :'vs_id', 'submit'),
+  '22023', 'submit with a null expected version is rejected');
+select pg_temp.expect_state(format('select public.admin_transition_promotion(%L::uuid,%L,0)', :'vs_id', 'submit'),
+  '22023', 'submit with version 0 is rejected as invalid');
+select pg_temp.expect_state(format('select public.admin_transition_promotion(%L::uuid,%L,-1)', :'vs_id', 'submit'),
+  '22023', 'submit with a negative version is rejected as invalid');
+select pg_temp.expect_state(format('select public.admin_transition_promotion(%L::uuid,%L,1)', :'vs_id', 'submit'),
+  'PS409', 'submit with a stale (older) version is rejected as a version conflict');
+select pg_temp.expect_state(format('select public.admin_transition_promotion(%L::uuid,%L,3)', :'vs_id', 'submit'),
+  'PS409', 'submit with a version the draft has not reached is rejected as a version conflict');
+reset role;
+insert into _promotion_results
+select 'rejected submits changed nothing: still a draft at version 2 with no submitted event',
+  c.status = 'draft' and c.version = 2
+  and (select count(*) from public.promotion_audit_events e where e.campaign_id = c.id and e.action = 'submitted') = 0
+from public.promotion_campaigns c where c.id = :'vs_id'::uuid;
+
+-- Authorization is decided before the version is compared, so a caller who may not submit learns nothing about it.
+set role authenticated;
+set request.jwt.claim.sub = :'admin2';
+select pg_temp.expect_state(format('select public.admin_transition_promotion(%L::uuid,%L,2)', :'vs_id', 'submit'),
+  '42501', 'non-creator admin cannot submit even with the current version');
+select pg_temp.expect_state(format('select public.admin_transition_promotion(%L::uuid,%L,1)', :'vs_id', 'submit'),
+  '42501', 'non-creator admin gets 42501, not a version conflict, with a stale version');
+set request.jwt.claim.sub = 'eeeeeeee-0000-4000-8000-000000000003';
+select pg_temp.expect_state(format('select public.admin_transition_promotion(%L::uuid,%L,2)', :'vs_id', 'submit'),
+  '42501', 'viewer cannot submit even with the current version');
+set request.jwt.claim.sub = :'admin';
+select public.admin_transition_promotion(:'vs_id'::uuid, 'submit', 2);
+reset role;
+insert into _promotion_results
+select 'submit with the current version succeeds, advances the version and audits it at that version',
+  c.status = 'submitted' and c.version = 3
+  and (select count(*) from public.promotion_audit_events e
+       where e.campaign_id = c.id and e.action = 'submitted' and e.campaign_version = 3 and e.previous_status = 'draft') = 1
+from public.promotion_campaigns c where c.id = :'vs_id'::uuid;
+set role authenticated;
+set request.jwt.claim.sub = :'admin';
+select pg_temp.expect_state(format('select public.admin_transition_promotion(%L::uuid,%L,3)', :'vs_id', 'submit'),
+  '22023', 'a second submit with the then-current version is rejected by the state machine');
+
+-- Approve and reject keep working without a version; if a version is supplied it is enforced too.
+select public.admin_create_promotion('Review versions','Review version fixture','banner',0,'60000000-0000-4000-8000-000000000002',null,null) as rv_id \gset
+select public.admin_transition_promotion(:'rv_id'::uuid, 'submit', 1);
+set request.jwt.claim.sub = :'owner';
+select pg_temp.expect_state(format('select public.admin_transition_promotion(%L::uuid,%L,0)', :'rv_id', 'approve'),
+  '22023', 'approve with an invalid version is rejected');
+select pg_temp.expect_state(format('select public.admin_transition_promotion(%L::uuid,%L,1)', :'rv_id', 'approve'),
+  'PS409', 'approve with a stale version is rejected as a version conflict');
+reset role;
+insert into _promotion_results
+select 'a stale approve changed nothing: still submitted at version 2',
+  c.status = 'submitted' and c.version = 2
+  and (select count(*) from public.promotion_audit_events e where e.campaign_id = c.id and e.action = 'approved') = 0
+from public.promotion_campaigns c where c.id = :'rv_id'::uuid;
+set role authenticated;
+set request.jwt.claim.sub = :'owner';
+select public.admin_transition_promotion(:'rv_id'::uuid, 'approve', 2);
+reset role;
+insert into _promotion_results
+select 'approve with the current version succeeds',
+  c.status = 'approved' and c.version = 3 from public.promotion_campaigns c where c.id = :'rv_id'::uuid;
+
+-- The unversioned transition and the key-less create must not survive as callable overloads.
+insert into _promotion_results
+select 'superseded unversioned transition and key-less create overloads no longer exist',
+  to_regprocedure('public.admin_transition_promotion(uuid,text)') is null
+  and to_regprocedure('public.admin_create_promotion(text,text,text,integer,timestamptz,timestamptz)') is null;
+insert into _promotion_results
+select 'versioned transition is executable by authenticated and not by anon',
+  has_function_privilege('authenticated', 'public.admin_transition_promotion(uuid,text,integer)', 'execute')
+  and not has_function_privilege('anon', 'public.admin_transition_promotion(uuid,text,integer)', 'execute')
+  and not has_function_privilege('public', 'public.admin_transition_promotion(uuid,text,integer)', 'execute');
 
 select case when ok then 'PASS' else 'FAIL' end as result, name
 from _promotion_results order by ok, name;

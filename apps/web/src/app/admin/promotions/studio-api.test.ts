@@ -53,6 +53,8 @@ describe('request construction', () => {
     await transitionCampaign(ID, 'approve');
     expect(lastCall()[0]).toBe('/api/admin/promotions/transition');
     expect(JSON.parse(lastCall()[1].body as string)).toEqual({ id: ID, action: 'approve' });
+    await transitionCampaign(ID, 'submit', 3);
+    expect(JSON.parse(lastCall()[1].body as string)).toEqual({ id: ID, action: 'submit', expectedVersion: 3 });
   });
 
   it('reads campaign history', async () => {
