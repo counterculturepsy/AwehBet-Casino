@@ -16,6 +16,7 @@ set -euo pipefail
 MODE=${1:-hardened}; D=$(cd "$(dirname "$0")/.." && pwd); DB=awehbet_sec_test_${MODE//-/_}
 ORIG="$D/migrations/20261111030000_promotion_workflow.sql"; FWD="$D/migrations/20261115120000_promotion_studio_workflow.sql"
 RLS="$D/migrations/20261115191853_private_table_rls.sql"
+ADMIN_RO="$D/migrations/20261116090000_admin_readonly_views.sql"
 psql -X -v ON_ERROR_STOP=1 -qc "drop database if exists $DB" postgres; psql -X -v ON_ERROR_STOP=1 -qc "create database $DB" postgres
 P="psql -X -v ON_ERROR_STOP=1 -q -d $DB"
 $P -f "$D/tests/00_supabase_stub.sql"; $P -f "$D/migrations/20261016140000_player_accounts.sql"; $P -f "$D/migrations/20261016190000_admin_access.sql"
@@ -55,6 +56,9 @@ case "$MODE" in
   *) echo "unknown mode: $MODE" >&2; exit 2 ;;
 esac
 
+# Read-only admin functions: applied twice to prove the migration is idempotent.
+$P -f "$ADMIN_RO"; $P -f "$ADMIN_RO"
 $P -f "$D/tests/10_security_tests.sql"
 $P -f "$D/tests/20_promotion_security_tests.sql"
+$P -f "$D/tests/50_admin_readonly_tests.sql"
 if [ "$MODE" = hardened ]; then bash "$D/tests/30_promotion_concurrency.sh" "$DB"; fi
