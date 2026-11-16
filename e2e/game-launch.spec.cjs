@@ -114,3 +114,72 @@ test('Unknown demo slug is not a provider redirect', async ({page}) => {
  expect(response.status()).toBe(404);
  await assertNoEscape();
 });
+
+test('Slots card -> dialog offers provider-hosted demo as a new-tab link only', async ({page}) => {
+ const assertNoEscape = monitorLaunchEscapes(page);
+ await page.goto('/slots');
+ await page.getByRole('button', {name:'View Sweet Bonanza',exact:true}).click();
+ const dialog = page.getByRole('dialog');
+ const demo = dialog.getByRole('link',{name:/Play free demo on Pragmatic Play/});
+ await expect(demo).toHaveAttribute('href','https://www.pragmaticplay.com/en/games/sweet-bonanza-slot/');
+ await expect(demo).toHaveAttribute('target','_blank');
+ await expect(demo).toHaveAttribute('rel','noopener noreferrer');
+ await expect(dialog).toContainText('not AwehBet');
+ // Showing the link must not load, embed or navigate to the provider.
+ await assertNoEscape();
+ await page.keyboard.press('Escape');
+ await expect(dialog).toHaveCount(0);
+});
+
+test('Titles without a verified provider page show no outbound demo link', async ({page}) => {
+ const assertNoEscape = monitorLaunchEscapes(page);
+ await page.goto('/slots');
+ await page.getByLabel('Search slots, providers or games...').or(page.getByPlaceholder('Search slots, providers or games...')).first().fill('Mega Moolah');
+ await page.getByRole('button', {name:'View Mega Moolah',exact:true}).click();
+ const dialog = page.getByRole('dialog');
+ await expect(dialog).toContainText('No official provider demo page is linked');
+ await expect(dialog.getByRole('link',{name:/Play free demo/})).toHaveCount(0);
+ await assertNoEscape();
+});
+
+test('Every outbound demo link points at its own provider over https', async ({page}) => {
+ const hosts = {'Pragmatic Play':'www.pragmaticplay.com','Hacksaw Gaming':'www.hacksawgaming.com',"Play'n GO":'www.playngo.com','NoLimit City':'nolimitcity.com','NetEnt':'netent.com','Push Gaming':'www.pushgaming.com','Big Time Gaming':'www.bigtimegaming.com','Spribe':'spribe.co'};
+ await page.goto('/slots');
+ while (await page.getByRole('button',{name:/Load More Games/}).count()) await page.getByRole('button',{name:/Load More Games/}).click();
+ const cards = page.locator('.slots-lobby-card');
+ const total = await cards.count();
+ expect(total).toBe(45);
+ let linked = 0;
+ for (let i = 0; i < total; i++) {
+  const card = cards.nth(i);
+  const provider = (await card.locator('.slots-lobby-card-details small').first().innerText()).trim();
+  const status = (await card.getByLabel('Game status').innerText()).trim();
+  await card.locator('.slots-lobby-image').click();
+  const link = page.getByRole('dialog').getByRole('link',{name:/Play free demo/});
+  if (status === 'Free demo on provider site') {
+   const url = new URL(await link.getAttribute('href'));
+   expect(url.protocol).toBe('https:');
+   expect(url.hostname).toBe(hosts[provider]);
+   linked++;
+  } else {
+   await expect(link).toHaveCount(0);
+  }
+  await page.keyboard.press('Escape');
+ }
+ expect(linked).toBe(38);
+});
+
+test('AwehBet original game plays inside the site with demo credits', async ({page}) => {
+ const assertNoEscape = monitorLaunchEscapes(page);
+ await page.goto('/slots');
+ await page.getByRole('link',{name:/Play Reel Rush/}).click();
+ await expect(page).toHaveURL(/\/slots\/reel-rush$/);
+ await expect(page.getByRole('heading',{level:1})).toContainText('REEL');
+ const status = page.getByRole('status');
+ await expect(status).toContainText('Ready to spin');
+ await page.getByRole('button',{name:'SPIN',exact:true}).click();
+ await expect(status).toContainText('Spinning');
+ await expect(status).toContainText(/You won|No win this spin/, {timeout: 5000});
+ await expect(page.getByText('TOTAL BET')).toBeVisible();
+ await assertNoEscape();
+});
