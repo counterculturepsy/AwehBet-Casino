@@ -168,3 +168,18 @@ test('Every outbound demo link points at its own provider over https', async ({p
  }
  expect(linked).toBe(38);
 });
+
+test('AwehBet original game plays inside the site with demo credits', async ({page}) => {
+ const assertNoEscape = monitorLaunchEscapes(page);
+ await page.goto('/slots');
+ await page.getByRole('link',{name:/Play Reel Rush/}).click();
+ await expect(page).toHaveURL(/\/slots\/reel-rush$/);
+ await expect(page.getByRole('heading',{level:1})).toContainText('REEL');
+ const status = page.getByRole('status');
+ await expect(status).toContainText('Ready to spin');
+ await page.getByRole('button',{name:'SPIN',exact:true}).click();
+ await expect(status).toContainText('Spinning');
+ await expect(status).toContainText(/You won|No win this spin/, {timeout: 5000});
+ await expect(page.getByText('TOTAL BET')).toBeVisible();
+ await assertNoEscape();
+});

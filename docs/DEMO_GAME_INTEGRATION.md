@@ -18,6 +18,9 @@ Added 2026-11-16 by owner decision. The /slots game dialog shows a "Play free de
 - This is NOT the "External official demos" process above: no written approval or provider terms review has been recorded for these links, and legal review (step 2) is still outstanding. The approval gate (`game-approval.ts`, `approvedExternalDemoUrl`, `/api/game-launch`) is unchanged and still denies every embedded or API launch.
 - Re-check the links periodically; provider sites change paths and may geo-restrict demos.
 
+## AwehBet original games (playable in-site)
+Added 2026-11-16. `/slots/reel-rush` is an in-house demo slot that runs entirely in the browser with demo credits. It uses no third-party game content, needs no provider permission, and has no wallet, deposit or prize connection. Its maths is a simulation and is not certified for wagering. It is featured in the Slots Masters lobby under "AwehBet Originals".
+
 ## Embedded demos
 Do not iframe, proxy, copy, or reverse-engineer provider games without express permission. An authorised embed must use an approved origin, CSP/frame policy, sandbox attributes and a documented provider session lifecycle. Embedded launches are not enabled by this change.
 

@@ -611,3 +611,10 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #ffcf
 .slots-lobby-demo-note{font-size:13px;margin:10px 0 4px}
 .slots-lobby-dialog .slots-lobby-secondary{display:inline-block;min-height:44px;margin:15px 6px 0;background:#251820;border:1px solid #744552;color:#f8dce3;text-decoration:none}
 .slots-lobby-sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* Slots lobby: in-house playable games */
+.slots-originals{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px;margin:22px 0;padding:22px 24px;border:1px solid #b27d43;border-radius:14px;background:linear-gradient(120deg,#2a1420,#160e17)}
+.slots-originals h2{margin:4px 0 6px;font-size:clamp(20px,3vw,28px)}.slots-originals h2 span{color:#ff365e}
+.slots-originals p{margin:0;max-width:640px;line-height:1.6;color:#d6c5cb;font-size:14px}
+.slots-originals-kicker{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#f1c77a}
+.slots-originals-play{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 22px;border-radius:10px;background:linear-gradient(#ff3e66,#b6002d);border:1px solid #ff8092;color:#fff;font-weight:800;text-decoration:none}
+.slots-originals-play:focus-visible{outline:3px solid #f1c77a;outline-offset:3px}
