@@ -9,7 +9,9 @@ FAILS=0
 
 q()  { psql -X -q -At -v ON_ERROR_STOP=1 -v VERBOSITY=verbose -d "$DB" "$@"; }
 as() { local sub=$1; shift; q -c "set role authenticated; set request.jwt.claim.sub = '$sub'; $*"; }
-ms() { date +%s%N | cut -b1-13; }
+# BusyBox date accepts %N but emits only seconds, so derive portable millisecond-scale values from epoch seconds.
+# The waits are deliberately three seconds and assertions allow one second, making second precision sufficient.
+ms() { echo $(( $(date +%s) * 1000 )); }
 check() { if [ "$2" = 1 ]; then echo "PASS  $1"; else echo "FAIL  $1"; FAILS=$((FAILS + 1)); fi; }
 ok() { if "$@"; then echo 1; else echo 0; fi; }
 # Wait until the holder session is inside pg_sleep: its row lock is then held and its writes are uncommitted.

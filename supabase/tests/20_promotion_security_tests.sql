@@ -656,6 +656,13 @@ select 'versioned transition is executable by authenticated and not by anon',
   and not has_function_privilege('anon', 'public.admin_transition_promotion(uuid,text,integer)', 'execute')
   and not has_function_privilege('public', 'public.admin_transition_promotion(uuid,text,integer)', 'execute');
 
+-- Server-only player tables must enforce RLS from the repository chain alone (20261115191853_private_table_rls.sql).
+insert into _promotion_results
+select 'every private player table enforces row level security',
+  count(*) = 5 and bool_and(c.relrowsecurity)
+from pg_class c join pg_namespace n on n.oid = c.relnamespace
+where n.nspname = 'private' and c.relname in ('player_identities','payout_accounts','kyc_reviews','audit_events','rate_limit_buckets');
+
 select case when ok then 'PASS' else 'FAIL' end as result, name
 from _promotion_results order by ok, name;
 do $$
