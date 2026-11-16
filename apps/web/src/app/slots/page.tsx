@@ -2,57 +2,12 @@
 
 import Link from 'next/link';
 import DepositCentre from '../deposit-centre';
+import {slotGames} from '@/lib/slots-lobby-games';
+import {officialDemoLink} from '@/lib/official-demo-links';
 import {useEffect,useMemo,useState} from 'react';
-import {Home,Search,Heart,Gamepad2,X,Club,Gift,Spade,Star,Crown,Sparkles,Coins,ArrowRight,ShieldCheck,Zap,Gem,Menu,Trophy,Plane,Wallet} from 'lucide-react';
+import {Home,Search,Heart,Gamepad2,X,Club,Gift,Spade,Star,Crown,Sparkles,Coins,ArrowRight,ShieldCheck,Zap,Gem,Menu,Trophy,Plane,Wallet,ExternalLink} from 'lucide-react';
 
-type SlotGame={name:string;provider:string;category:string;image?:number;newGame?:boolean;popular?:boolean;jackpot?:boolean;bonusBuy?:boolean};
-const games:SlotGame[]=[
- {name:'Gates of Olympus 1000',provider:'Pragmatic Play',category:'Fantasy',image:1,popular:true,bonusBuy:true},
- {name:'Sweet Bonanza',provider:'Pragmatic Play',category:'Sweets',image:2,popular:true,bonusBuy:true},
- {name:'Big Bass Splash',provider:'Pragmatic Play',category:'Adventure',image:3,popular:true,bonusBuy:true},
- {name:'Sugar Rush',provider:'Pragmatic Play',category:'Sweets',image:4,popular:true,bonusBuy:true},
- {name:'Buffalo King',provider:'Pragmatic Play',category:'Adventure',image:5,popular:true},
- {name:'Book of Dead',provider:"Play'n GO",category:'Adventure',image:6,popular:true},
- {name:'Aviator',provider:'Spribe',category:'Crash',image:7,popular:true},
- {name:'Zeus vs Hades',provider:'Pragmatic Play',category:'Fantasy',image:8,popular:true,bonusBuy:true},
- {name:'Starlight Princess',provider:'Pragmatic Play',category:'Fantasy',image:9,popular:true,bonusBuy:true},
- {name:'Majestic King',provider:'Pragmatic Play',category:'Adventure',image:10,popular:true},
- {name:'Gates of Olympus',provider:'Pragmatic Play',category:'Fantasy',popular:true,bonusBuy:true},
- {name:'Sweet Bonanza 1000',provider:'Pragmatic Play',category:'Sweets',newGame:true,bonusBuy:true},
- {name:'The Dog House',provider:'Pragmatic Play',category:'Animals',popular:true},
- {name:'Big Bass Bonanza',provider:'Pragmatic Play',category:'Adventure',popular:true},
- {name:'Fruit Party',provider:'Pragmatic Play',category:'Fruit',bonusBuy:true},
- {name:'Wanted Dead or a Wild',provider:'Hacksaw Gaming',category:'Western',popular:true,bonusBuy:true},
- {name:'Le Bandit',provider:'Hacksaw Gaming',category:'Adventure',popular:true},
- {name:'Chaos Crew',provider:'Hacksaw Gaming',category:'Fantasy',bonusBuy:true},
- {name:'Dork Unit',provider:'Hacksaw Gaming',category:'Fantasy'},
- {name:'Hand of Anubis',provider:'Hacksaw Gaming',category:'Egypt',bonusBuy:true},
- {name:'Mental',provider:'NoLimit City',category:'Horror',bonusBuy:true},
- {name:'Tombstone RIP',provider:'NoLimit City',category:'Western',bonusBuy:true},
- {name:'San Quentin xWays',provider:'NoLimit City',category:'Western'},
- {name:'Deadwood',provider:'NoLimit City',category:'Western'},
- {name:'Fire in the Hole xBomb',provider:'NoLimit City',category:'Adventure'},
- {name:'Reactoonz',provider:"Play'n GO",category:'Fantasy',popular:true},
- {name:'Legacy of Dead',provider:"Play'n GO",category:'Egypt'},
- {name:'Rise of Olympus',provider:"Play'n GO",category:'Fantasy'},
- {name:'Moon Princess',provider:"Play'n GO",category:'Fantasy'},
- {name:'Starburst',provider:'NetEnt',category:'Classic',popular:true},
- {name:'Gonzo’s Quest',provider:'NetEnt',category:'Adventure',popular:true},
- {name:'Dead or Alive 2',provider:'NetEnt',category:'Western'},
- {name:'Divine Fortune',provider:'NetEnt',category:'Fantasy',jackpot:true},
- {name:'Mega Moolah',provider:'Games Global',category:'Safari',jackpot:true},
- {name:'Immortal Romance',provider:'Games Global',category:'Fantasy'},
- {name:'Thunderstruck II',provider:'Games Global',category:'Fantasy'},
- {name:'Book of Atem',provider:'Games Global',category:'Egypt'},
- {name:'Jammin Jars',provider:'Push Gaming',category:'Fruit',popular:true},
- {name:'Razor Shark',provider:'Push Gaming',category:'Ocean'},
- {name:'Fat Rabbit',provider:'Push Gaming',category:'Animals'},
- {name:'Wild Swarm',provider:'Push Gaming',category:'Animals'},
- {name:'Bonanza',provider:'Big Time Gaming',category:'Adventure',popular:true},
- {name:'Extra Chilli',provider:'Big Time Gaming',category:'Fruit'},
- {name:'Who Wants to Be a Millionaire Megaways',provider:'Big Time Gaming',category:'Classic'},
- {name:'White Rabbit',provider:'Big Time Gaming',category:'Fantasy'}
-];
+const games=slotGames;
 const categories=['All Slots','New Games','Popular','Jackpots','Bonus Buy','Providers'] as const;
 type Category=typeof categories[number];
 const providers=[...new Set(games.map(game=>game.provider))].sort((a,b)=>a.localeCompare(b));
@@ -71,6 +26,9 @@ export default function SlotsLobby(){
  useEffect(()=>{if(favouritesReady){try{window.localStorage.setItem('awehbet:slot-favourites:v1',JSON.stringify(favourites))}catch{}}},[favourites,favouritesReady]);
  const [onlyFavourites,setOnlyFavourites]=useState(false);
  const [selected,setSelected]=useState<string|null>(null);
+ const selectedGame=selected?games.find(game=>game.name===selected)??null:null;
+ const selectedDemoUrl=selectedGame?officialDemoLink(selectedGame.name,selectedGame.provider):null;
+ useEffect(()=>{if(!selected)return;const close=(event:KeyboardEvent)=>{if(event.key==='Escape')setSelected(null)};window.addEventListener('keydown',close);return()=>window.removeEventListener('keydown',close)},[selected]);
  const visible=useMemo(()=>games.filter(game=>
    (category==='All Slots'||category==='Providers'||(category==='Popular'&&game.popular)||(category==='New Games'&&game.newGame)||(category==='Jackpots'&&game.jackpot)||(category==='Bonus Buy'&&game.bonusBuy))&&
    (provider==='All Providers'||game.provider===provider)&&
@@ -106,13 +64,15 @@ export default function SlotsLobby(){
    {visible.length>0?<div className="slots-lobby-grid">{displayed.map(game=><article className="slots-lobby-card" key={game.name}>
     <button type="button" className="slots-lobby-image" onClick={()=>setSelected(game.name)} aria-label={`View ${game.name}`}>{game.image?<img src={`/assets/slot-${game.image}.webp`} alt={game.name}/>:<span className="slots-masters-placeholder"><Gamepad2 size={32}/><strong>{game.name}</strong><small>{game.provider}</small></span>}<span>GAME DETAILS</span></button>
     <button type="button" className={favourites.includes(game.name)?'slots-lobby-heart saved':'slots-lobby-heart'} onClick={()=>toggleFavourite(game.name)} aria-label={`${favourites.includes(game.name)?'Remove from':'Add to'} favourites: ${game.name}`} aria-pressed={favourites.includes(game.name)}><Heart size={18} fill={favourites.includes(game.name)?'currentColor':'none'}/></button>
-    <div className="slots-lobby-card-details"><strong>{game.name}</strong><small>{game.provider}</small><small aria-label="Game status">Awaiting provider integration</small></div>
+    <div className="slots-lobby-card-details"><strong>{game.name}</strong><small>{game.provider}</small><small aria-label="Game status">{officialDemoLink(game.name,game.provider)?'Free demo on provider site':'Awaiting provider integration'}</small></div>
    </article>)}</div>:<div className="slots-lobby-empty"><h2>No games found</h2><p>{onlyFavourites&&favourites.length===0?'Save a game using its heart icon to see it here.':'Try another search, category or turn off the favourites filter.'}</p><button type="button" onClick={()=>{setQuery('');setCategory('All Slots');setOnlyFavourites(false);setProvider('All Providers');setGameType('All types');setVisibleCount(20)}}>Clear filters</button></div>}
    {visible.length>displayed.length&&<button type="button" className="slots-masters-load-more" onClick={()=>setVisibleCount(count=>count+20)}>Load More Games ({visible.length-displayed.length} remaining)</button>}
   </section>
-  <footer className="slots-lobby-footer">18+ · AwehBet visual frontend preview · Additional titles are catalogue previews without licensed game artwork or provider integration. No real-money wagering or payment processing.</footer>
+  <footer className="slots-lobby-footer">18+ · AwehBet visual frontend preview · Titles are catalogue previews without licensed game artwork or provider integration. Free demos open on each provider’s own website and are not operated by AwehBet. No real-money wagering or payment processing.</footer>
 
 
-  {selected&&<div className="slots-lobby-overlay" onMouseDown={()=>setSelected(null)}><div className="slots-lobby-dialog" role="dialog" aria-modal="true" aria-label={selected} onMouseDown={event=>event.stopPropagation()}><button type="button" className="slots-lobby-close" onClick={()=>setSelected(null)} aria-label="Close game preview"><X/></button><img src="/assets/logo.webp" alt="AwehBet"/><h2>{selected}</h2><p><strong>Provider:</strong> {games.find(game=>game.name===selected)?.provider}</p><p><strong>Category:</strong> {games.find(game=>game.name===selected)?.category}</p><p><strong>Status:</strong> Awaiting authorised provider integration. No playable demo is connected for this title.</p><Link href={`/game-launcher?game=${encodeURIComponent(selected)}`} className="slots-lobby-dismiss" style={{display:"inline-block",textDecoration:"none",marginRight:12}}>Open game launcher</Link><button type="button" className="slots-lobby-dismiss" onClick={()=>setSelected(null)}>Back to slots</button></div></div>}
+  {selectedGame&&<div className="slots-lobby-overlay" onMouseDown={()=>setSelected(null)}><div className="slots-lobby-dialog" role="dialog" aria-modal="true" aria-label={selectedGame.name} onMouseDown={event=>event.stopPropagation()}><button type="button" className="slots-lobby-close" onClick={()=>setSelected(null)} aria-label="Close game preview"><X/></button><img src="/assets/logo.webp" alt="AwehBet"/><h2>{selectedGame.name}</h2><p><strong>Provider:</strong> {selectedGame.provider}</p><p><strong>Category:</strong> {selectedGame.category}</p>
+   {selectedDemoUrl?<><a href={selectedDemoUrl} target="_blank" rel="noopener noreferrer" className="slots-lobby-dismiss slots-lobby-demo-link">Play free demo on {selectedGame.provider} <ExternalLink size={16} aria-hidden="true"/><span className="slots-lobby-sr-only"> (opens the provider’s website in a new tab)</span></a><p className="slots-lobby-demo-note">Opens {selectedGame.provider}’s own website in a new tab. The demo is hosted and operated by {selectedGame.provider}, not AwehBet. Play money only. 18+.</p></>:<p><strong>Demo:</strong> No official provider demo page is linked for this title yet.</p>}
+   <p><strong>Play on AwehBet:</strong> Awaiting authorised provider integration. No playable demo is connected on AwehBet for this title.</p><Link href={`/game-launcher?game=${encodeURIComponent(selectedGame.name)}`} className="slots-lobby-dismiss slots-lobby-secondary">Open game launcher</Link><button type="button" className="slots-lobby-dismiss slots-lobby-secondary" onClick={()=>setSelected(null)}>Back to slots</button></div></div>}
  </main>;
 }
