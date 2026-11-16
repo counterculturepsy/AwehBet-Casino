@@ -51,9 +51,12 @@ export function pageRange(page: number): { from: number; to: number } {
   return { from, to: from + ADMIN_PAGE_SIZE - 1 };
 }
 
+/** Never advertises a page that parsePage would refuse; see pagesAreCapped for telling the admin. */
 export function pageCount(total: number | null | undefined): number {
-  return Math.max(1, Math.ceil((total ?? 0) / ADMIN_PAGE_SIZE));
+  return Math.min(MAX_PAGE, Math.max(1, Math.ceil((total ?? 0) / ADMIN_PAGE_SIZE)));
 }
+
+export const pagesAreCapped = (total: number | null | undefined): boolean => (total ?? 0) > MAX_PAGE * ADMIN_PAGE_SIZE;
 
 export function formatMinor(amountMinor: number | string | null | undefined): string {
   if (amountMinor === null || amountMinor === undefined || amountMinor === '') return '—';

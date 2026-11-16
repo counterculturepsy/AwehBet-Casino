@@ -44,3 +44,4 @@
 .admin-timeline strong{text-transform:none}.admin-filters .admin-btn,.admin-filters-actions a{display:inline-flex;align-items:center;min-height:44px;text-decoration:none}
 .admin-table caption{caption-side:top}
 .admin-workspace{grid-template-columns:minmax(0,1fr)}.admin-workspace>*,.admin-detail-grid>*{min-width:0}.admin-filters.admin-panel{padding:18px}
+.admin-pagination-note{flex-basis:100%;margin:0}

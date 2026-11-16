@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ADMIN_PAGE_SIZE, KYC_STATUSES, buildHref, canSeeContactDetails, formatMinor, maskEmail, maskPhone, pageCount, pageRange,
+import { ADMIN_PAGE_SIZE, KYC_STATUSES, buildHref, canSeeContactDetails, pagesAreCapped, formatMinor, maskEmail, maskPhone, pageCount, pageRange,
   parseCursor, parseEnum, parseEventPrefix, parsePage, parseUuid, sanitizeSearch, statusTone } from './view';
 
 describe('admin view helpers', () => {
@@ -39,6 +39,12 @@ describe('admin view helpers', () => {
     expect(pageCount(null)).toBe(1);
     expect(pageCount(25)).toBe(1);
     expect(pageCount(26)).toBe(2);
+    // The list cap: the last advertised page must be one parsePage accepts, so Next can never loop.
+    expect(pageCount(50_001)).toBe(2000);
+    expect(pageCount(10_000_000)).toBe(2000);
+    expect(parsePage(String(pageCount(10_000_000)))).toBe(pageCount(10_000_000));
+    expect(pagesAreCapped(50_000)).toBe(false);
+    expect(pagesAreCapped(50_001)).toBe(true);
   });
   it('formats money from minor units', () => {
     expect(formatMinor(123456).replace(/\s/g, ' ')).toMatch(/^R1[ ,]234[.,]56$/);

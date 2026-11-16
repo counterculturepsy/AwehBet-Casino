@@ -20,3 +20,7 @@ Added 2026-11-16. Five pages under `/admin`, all behind `requireAdmin()` (signed
 `supabase/migrations/20261116090000_admin_readonly_views.sql` adds `admin_list_audit_events` and `admin_list_kyc_reviews`. They are `security definer`, callable by `service_role` only, and re-check the acting user's admin role. Until the migration is applied the audit log, the review records and the per-player history show an "unavailable" message; every other page works without it.
 
 Apply it through the normal release process, then run `supabase/tests/run_local.sh hardened` against a throwaway database to confirm.
+
+## Known limits
+- Lists stop at 2,000 pages (50,000 rows); narrow the filters beyond that.
+- The verification queue is ordered by registration date because no queue-entry timestamp is stored. Recording one needs a schema change and is not part of this work.
