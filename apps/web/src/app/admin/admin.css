@@ -33,3 +33,15 @@
 .admin-table td.admin-title-cell{text-transform:none}.admin-title-cell strong{display:block}.admin-meta{display:block;margin-top:4px}.admin-row-actions{display:flex;flex-wrap:wrap;gap:8px}.admin-table td .admin-btn{font-size:12px;padding:7px 12px}.admin-table tr[aria-current=true]{background:#21151a}
 .admin-timeline{list-style:none;margin:16px 0;padding:0 0 0 2px;border-left:2px solid #5a3f48}.admin-timeline li{display:grid;gap:3px;position:relative;padding:0 0 18px 20px}.admin-timeline li::before{content:"";position:absolute;left:-8px;top:4px;width:12px;height:12px;border-radius:50%;background:#e7b768;border:2px solid #080709}.admin-timeline time{color:#bfb3b7;font-size:12px}
 @media(max-width:720px){.admin-hide-small{display:none}.admin-table th,.admin-table td{padding:12px 8px}.admin-btn{min-height:40px}}
+
+/* Read-only operations pages: players, payments, verification, audit, games */
+.admin-link{color:#ffbd67;text-decoration:underline;text-underline-offset:3px}.admin-link:focus-visible,.admin-tabs a:focus-visible,.admin-pagination a:focus-visible{outline:2px solid #e7b768;outline-offset:2px}
+.admin-sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.admin-tabs{display:flex;flex-wrap:wrap;gap:8px}.admin-tabs a{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border:1px solid #61414a;border-radius:8px;color:#e4d4d8;text-decoration:none;text-transform:capitalize}.admin-tabs a[aria-current=page]{background:#5b202d;border-color:#e7b768;color:#fff;font-weight:700}
+.admin-pagination{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;font-size:13px;color:#c6b6b9}.admin-pagination a{text-decoration:none;display:inline-flex;align-items:center;min-height:44px}.admin-pagination [aria-disabled=true]{opacity:.45;cursor:not-allowed;display:inline-flex;align-items:center;min-height:44px}
+.admin-detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px}.admin-panel h2{margin:0 0 12px;font-size:18px}
+.admin-dl{display:grid;gap:10px;margin:0}.admin-dl>div{display:flex;justify-content:space-between;gap:14px;padding-bottom:9px;border-bottom:1px solid #2f2126}.admin-dl dt{color:#bfb3b7;font-size:13px}.admin-dl dd{margin:0;text-align:right;font-size:14px;overflow-wrap:anywhere}
+.admin-timeline strong{text-transform:none}.admin-filters .admin-btn,.admin-filters-actions a{display:inline-flex;align-items:center;min-height:44px;text-decoration:none}
+.admin-table caption{caption-side:top}
+.admin-workspace{grid-template-columns:minmax(0,1fr)}.admin-workspace>*,.admin-detail-grid>*{min-width:0}.admin-filters.admin-panel{padding:18px}
+.admin-pagination-note{flex-basis:100%;margin:0}
